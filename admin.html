@@ -35,16 +35,17 @@
             cursor: pointer;
             color: var(--muted-foreground);
             font-weight: 500;
+            transition: background-color 0.15s ease, color 0.15s ease;
         }
 
         .nav-item:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: var(--accent);
             color: var(--foreground);
         }
 
         .nav-item.active {
             background-color: var(--primary);
-            color: white;
+            color: var(--primary-foreground);
         }
 
         .admin-content {
@@ -80,6 +81,10 @@
         th {
             font-weight: 600;
             color: var(--muted-foreground);
+        }
+
+        tbody tr:hover {
+            background-color: var(--muted);
         }
 
         .status-badge {
