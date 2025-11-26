@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Reservas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=delete,edit_square" />
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background-color: var(--secondary);
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border);
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--muted-foreground);
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--foreground);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .admin-content {
+            padding: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--muted-foreground);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-confirmed {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="flex items-center gap-2 mb-8 px-2">
+                <div class="avatar" style="width: 32px; height: 32px;">A</div>
+                <span class="font-bold">Admin Panel</span>
+            </div>
+
+            <nav>
+                <div class="nav-item active" data-tab="reservations">Reservas</div>
+                <div class="nav-item" data-tab="calendar">Calendario</div>
+                <div class="nav-item" data-tab="news">Novedades</div>
+                <div class="nav-item" id="logoutBtn">Cerrar Sesión</div>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+
+            <!-- Reservations Tab -->
+            <div id="reservations" class="tab-content active">
+                <h2 class="text-xl font-bold mb-4">Gestión de Reservas</h2>
+                <div class="card">
+                    <div class="card-header flex gap-4" style="flex-wrap: wrap;">
+                        <input type="text" id="searchReservations" class="input"
+                            placeholder="Buscar por nombre o juego..." style="flex: 1; min-width: 200px;">
+                        <div class="flex gap-2 items-center">
+                            <label for="searchDateStart" class="text-sm font-bold">Desde:</label>
+                            <input type="date" id="searchDateStart" class="input" style="width: auto;"
+                                title="Fecha Inicio">
+                            <label for="searchDateEnd" class="text-sm font-bold">Hasta:</label>
+                            <input type="date" id="searchDateEnd" class="input" style="width: auto;" title="Fecha Fin">
+                        </div>
+                    </div>
+                    <div class="card-content table-container">
+                        <table id="reservationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Cliente</th>
+                                    <th>Juego</th>
+                                    <th>Personas</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Tab -->
+            <div id="calendar" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">Gestión de Calendario</h2>
+                <div class="flex gap-8 items-start flex-wrap">
+                    <!-- Calendar Grid -->
+                    <div class="card admin-calendar-card" style="flex: 1; min-width: 300px; max-width: 400px;">
+                        <div class="card-header">
+                            <p class="text-sm text-muted">Seleccioná un día para gestionarlo.</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="flex justify-between items-center mb-4">
+                                <button id="adminPrevMonth" class="btn btn-outline">&lt;</button>
+                                <span id="adminMonthDisplay" class="font-bold">Noviembre 2025</span>
+                                <button id="adminNextMonth" class="btn btn-outline">&gt;</button>
+                            </div>
+                            <div class="calendar-header">
+                                <div>Dom</div>
+                                <div>Lun</div>
+                                <div>Mar</div>
+                                <div>Mié</div>
+                                <div>Jue</div>
+                                <div>Vie</div>
+                                <div>Sáb</div>
+                            </div>
+                            <div id="adminCalendarGrid" class="calendar-grid">
+                                <!-- JS Generated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Management Panel -->
+                    <div id="dateManagementPanel" class="card"
+                        style="flex: 1; min-width: 300px; max-width: 350px; opacity: 0.5; pointer-events: none;">
+                        <div class="card-header">
+                            <h3 class="font-bold">Gestionar Fecha</h3>
+                        </div>
+                        <div class="card-content flex flex-col gap-4">
+                            <p id="selectedDateDisplay" class="text-sm text-muted mb-2">Seleccioná una fecha...</p>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="text-sm font-bold">Bloquear Fecha</label>
+                                <button id="toggleBlockBtn" class="btn btn-outline w-full">Bloquear /
+                                    Desbloquear</button>
+                            </div>
+
+                            <div class="flex flex-col gap-2 border-t pt-4 mt-2">
+                                <label class="text-sm font-bold">Fecha Especial</label>
+                                <input type="text" id="specialDateName" class="input"
+                                    placeholder="Nombre (ej. Navidad)">
+                                <div class="flex gap-2">
+                                    <button id="saveSpecialDateBtn" class="btn btn-primary flex-1">Guardar</button>
+                                    <button id="deleteSpecialDateBtn" class="btn btn-destructive flex-1">Borrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Tab -->
+            <div id="news" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">Gestión de Novedades</h2>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+                    <!-- Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title text-sm">Nueva Novedad</h3>
+                        </div>
+                        <div class="card-content flex flex-col gap-4">
+                            <input type="text" id="newsTitle" class="input" placeholder="Título">
+                            <textarea id="newsDesc" class="input" style="height: 100px;"
+                                placeholder="Descripción"></textarea>
+                            <input type="text" id="newsImg" class="input" placeholder="URL de la imagen">
+                            <button id="addNewsBtn" class="btn btn-primary">Publicar</button>
+                        </div>
+                    </div>
+
+                    <!-- List -->
+                    <div id="adminNewsList" class="flex flex-col gap-4">
+                        <!-- JS Injected -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+
+    <!-- Edit Reservation Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Editar Reserva</h2>
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label class="text-sm font-bold">Fecha</label>
+                    <input type="date" id="editDate" class="input">
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Hora</label>
+                    <select id="editTime" class="input">
+                        <option value="17:00 - 19:00">17:00 - 19:00</option>
+                        <option value="19:00 - 21:00">19:00 - 21:00</option>
+                        <option value="21:00 - 23:00">21:00 - 23:00</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Cliente</label>
+                    <input type="text" id="editClient" class="input" placeholder="Nombre del cliente">
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Juego</label>
+                    <input type="text" id="editGame" class="input" placeholder="Nombre del juego">
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Personas</label>
+                    <input type="number" id="editPeople" class="input" min="1" max="6" placeholder="Cantidad">
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Estado</label>
+                    <select id="editStatus" class="input">
+                        <option value="pending">Pendiente</option>
+                        <option value="confirmed">Confirmada</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 mt-4">
+                    <button class="btn btn-primary flex-1" onclick="saveEditReservation()">Guardar Cambios</button>
+                    <button class="btn btn-outline flex-1" onclick="closeEditModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

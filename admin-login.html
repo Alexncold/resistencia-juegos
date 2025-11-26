@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Reservas</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #427AA1 0%, #2c5f7f 100%);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="card login-card">
+            <div class="login-header">
+                <h1 class="login-title">Panel de Administración</h1>
+                <p class="login-subtitle">Ingresá tus credenciales para continuar</p>
+            </div>
+
+            <div class="card-content">
+                <form id="adminLoginForm" class="flex flex-col gap-4">
+                    <div>
+                        <label for="username" class="text-sm font-bold">Usuario</label>
+                        <input type="text" id="username" class="input" placeholder="Ingresá tu usuario" required>
+                    </div>
+
+                    <div>
+                        <label for="password" class="text-sm font-bold">Contraseña</label>
+                        <input type="password" id="password" class="input" placeholder="Ingresá tu contraseña" required>
+                    </div>
+
+                    <p id="errorMessage" class="text-sm text-center hidden" style="color: #dc2626;"></p>
+
+                    <button type="submit" class="btn btn-primary w-full">
+                        Iniciar Sesión
+                    </button>
+
+                    <a href="index.html" class="text-sm text-center text-muted" style="text-decoration: none;">
+                        ← Volver al inicio
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script>
+        // Check if already logged in
+        if (Storage.isAdminLoggedIn()) {
+            window.location.href = 'admin.html';
+        }
+
+        const form = document.getElementById('adminLoginForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const result = Storage.adminLogin(username, password);
+
+            if (result.success) {
+                window.location.href = 'admin.html';
+            } else {
+                errorMessage.textContent = result.error;
+                errorMessage.classList.remove('hidden');
+
+                // Clear password field
+                document.getElementById('password').value = '';
+            }
+        });
+    </script>
+</body>
+
+</html>
