@@ -112,6 +112,8 @@
             <nav>
                 <div class="nav-item active" data-tab="reservations">Reservas</div>
                 <div class="nav-item" data-tab="calendar">Calendario</div>
+                <div class="nav-item" data-tab="times">Horarios</div>
+                <div class="nav-item" data-tab="price">Precio</div>
                 <div class="nav-item" data-tab="news">Novedades</div>
                 <div class="nav-item" id="logoutBtn">Cerrar Sesión</div>
             </nav>
@@ -151,6 +153,32 @@
                                 <!-- JS Injected -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Slots Tab -->
+            <div id="times" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">Gestión de Horarios</h2>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Form -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title text-sm">Nuevo Horario</h3>
+                        </div>
+                        <div class="card-content flex flex-col gap-4">
+                            <input type="text" id="timeSlotLabel" class="input" placeholder="Ej: 17:00 - 19:00">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="timeSlotActive" checked>
+                                <span>Activo</span>
+                            </label>
+                            <button id="addTimeSlotBtn" class="btn btn-primary">Agregar horario</button>
+                        </div>
+                    </div>
+
+                    <!-- List -->
+                    <div id="adminTimeSlotsList" class="flex flex-col gap-4">
+                        <!-- JS Injected -->
                     </div>
                 </div>
             </div>
@@ -210,6 +238,24 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Tab -->
+            <div id="price" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">Precio por Reserva</h2>
+                <div class="card" style="max-width: 400px;">
+                    <div class="card-header">
+                        <h3 class="card-title text-sm">Modificar precio</h3>
+                    </div>
+                    <div class="card-content flex flex-col gap-4">
+                        <div>
+                            <label class="text-sm font-bold" for="priceInput">Precio por turno (ARS)</label>
+                            <input type="number" id="priceInput" class="input" min="1" step="100" placeholder="5000">
+                        </div>
+                        <button id="savePriceBtn" class="btn btn-primary">Guardar precio</button>
+                        <p class="text-sm text-muted">Este precio se mostrará en la página de reservas y se guardará en cada reserva nueva.</p>
                     </div>
                 </div>
             </div>

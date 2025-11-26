@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryTime: document.getElementById('summaryTime'),
         summaryPeople: document.getElementById('summaryPeople'),
         summaryGame: document.getElementById('summaryGame'),
+        summaryTotal: document.getElementById('summaryTotal'),
         payBtn: document.getElementById('payBtn'),
         errorMsg: document.getElementById('errorMsg'),
 
@@ -58,7 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Init
     els.userName.textContent = user.name;
     els.userAvatar.textContent = user.avatar;
+    const price = Storage.getPrice();
+    if (els.summaryTotal) {
+        els.summaryTotal.textContent = `$${price}`;
+    }
     renderCalendar();
+    renderTimeSlots();
     renderNews();
 
     // Event Listeners
@@ -140,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             time: state.selectedTime,
             people: state.people,
             game: state.gameType === 'specific' ? state.gameName : 'A decidir en el local',
-            total: 5000
+            total: Storage.getPrice()
         };
 
         Storage.addReservation(reservation);
@@ -150,6 +156,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Functions
+    function renderTimeSlots() {
+        const timeSlots = Storage.getTimeSlots().filter(slot => slot.active);
+        if (!timeSlots.length) {
+            els.timeSlotsContainer.innerHTML = '<p class="text-sm text-muted">No hay horarios disponibles. Consultá con el local.</p>';
+            return;
+        }
+
+        els.timeSlotsContainer.innerHTML = '';
+        timeSlots.forEach(slot => {
+            const div = document.createElement('div');
+            div.className = 'time-slot';
+            div.dataset.time = slot.label;
+            div.textContent = slot.label;
+            els.timeSlotsContainer.appendChild(div);
+        });
+    }
+
     function renderCalendar() {
         const year = state.currentDate.getFullYear();
         const month = state.currentDate.getMonth();

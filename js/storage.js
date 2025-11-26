@@ -3,7 +3,9 @@ const Storage = {
         RESERVATIONS: 'reservas_data',
         NEWS: 'reservas_news',
         BLOCKED_DATES: 'reservas_blocked',
-        USER: 'reservas_user'
+        USER: 'reservas_user',
+        TIME_SLOTS: 'reservas_time_slots',
+        PRICE: 'reservas_price'
     },
 
     init() {
@@ -36,6 +38,19 @@ const Storage = {
 
         if (!localStorage.getItem(this.KEYS.BLOCKED_DATES)) {
             localStorage.setItem(this.KEYS.BLOCKED_DATES, JSON.stringify([]));
+        }
+
+        if (!localStorage.getItem(this.KEYS.TIME_SLOTS)) {
+            const defaultTimeSlots = [
+                { id: 'slot1', label: '17:00 - 19:00', active: true },
+                { id: 'slot2', label: '19:00 - 21:00', active: true },
+                { id: 'slot3', label: '21:00 - 23:00', active: true }
+            ];
+            localStorage.setItem(this.KEYS.TIME_SLOTS, JSON.stringify(defaultTimeSlots));
+        }
+
+        if (!localStorage.getItem(this.KEYS.PRICE)) {
+            localStorage.setItem(this.KEYS.PRICE, '5000');
         }
     },
 
@@ -160,6 +175,39 @@ const Storage = {
         }
         localStorage.setItem(this.KEYS.BLOCKED_DATES, JSON.stringify(blocked));
         return blocked;
+    },
+
+    // Time Slots
+    getTimeSlots() {
+        return JSON.parse(localStorage.getItem(this.KEYS.TIME_SLOTS) || '[]');
+    },
+
+    saveTimeSlots(timeSlots) {
+        localStorage.setItem(this.KEYS.TIME_SLOTS, JSON.stringify(timeSlots));
+    },
+
+    toggleTimeSlotActive(id) {
+        const timeSlots = this.getTimeSlots();
+        const index = timeSlots.findIndex(t => t.id === id);
+        if (index !== -1) {
+            timeSlots[index].active = !timeSlots[index].active;
+            this.saveTimeSlots(timeSlots);
+        }
+        return timeSlots;
+    },
+
+    // Price
+    getPrice() {
+        const raw = localStorage.getItem(this.KEYS.PRICE);
+        const value = parseInt(raw || '5000', 10);
+        return isNaN(value) ? 5000 : value;
+    },
+
+    setPrice(value) {
+        const num = parseInt(value, 10);
+        if (!isNaN(num) && num > 0) {
+            localStorage.setItem(this.KEYS.PRICE, String(num));
+        }
     },
 
     // Special Dates

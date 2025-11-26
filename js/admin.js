@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab.dataset.tab === 'reservations') renderReservations();
             if (tab.dataset.tab === 'calendar') renderAdminCalendar();
             if (tab.dataset.tab === 'news') renderAdminNews();
+            if (tab.dataset.tab === 'times') renderTimeSlots();
+            if (tab.dataset.tab === 'price') renderPrice();
         });
     });
 
@@ -99,7 +101,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate modal fields
         document.getElementById('editDate').value = reservation.date;
-        document.getElementById('editTime').value = reservation.time;
+
+        const editTimeSelect = document.getElementById('editTime');
+        const timeSlots = Storage.getTimeSlots();
+        editTimeSelect.innerHTML = '';
+        timeSlots.forEach(slot => {
+            const opt = document.createElement('option');
+            opt.value = slot.label;
+            opt.textContent = slot.label;
+            editTimeSelect.appendChild(opt);
+        });
+        editTimeSelect.value = reservation.time;
         document.getElementById('editClient').value = reservation.userName;
         document.getElementById('editGame').value = reservation.game;
         document.getElementById('editPeople').value = reservation.people;
@@ -296,6 +308,89 @@ document.addEventListener('DOMContentLoaded', () => {
             Storage.deleteNews(id);
             renderAdminNews();
         }
+    };
+
+    // --- Price Logic ---
+    const priceInput = document.getElementById('priceInput');
+
+    function renderPrice() {
+        if (!priceInput) return;
+        const currentPrice = Storage.getPrice();
+        priceInput.value = currentPrice;
+    }
+
+    const savePriceBtn = document.getElementById('savePriceBtn');
+    if (savePriceBtn) {
+        savePriceBtn.addEventListener('click', () => {
+            const value = parseInt(priceInput.value, 10);
+            if (isNaN(value) || value <= 0) {
+                alert('Ingresá un precio válido mayor a 0');
+                return;
+            }
+            Storage.setPrice(value);
+            alert('Precio actualizado correctamente');
+        });
+    }
+
+    // --- Time Slots Logic ---
+    const timeSlotLabel = document.getElementById('timeSlotLabel');
+    const timeSlotActive = document.getElementById('timeSlotActive');
+    const adminTimeSlotsList = document.getElementById('adminTimeSlotsList');
+
+    document.getElementById('addTimeSlotBtn').addEventListener('click', () => {
+        const label = (timeSlotLabel.value || '').trim();
+        const active = timeSlotActive.checked;
+        if (!label) {
+            alert('Ingresá un horario válido, por ejemplo 17:00 - 19:00');
+            return;
+        }
+
+        const timeSlots = Storage.getTimeSlots();
+        const newSlot = {
+            id: 'slot_' + Date.now().toString(),
+            label,
+            active
+        };
+        timeSlots.push(newSlot);
+        Storage.saveTimeSlots(timeSlots);
+
+        timeSlotLabel.value = '';
+        timeSlotActive.checked = true;
+        renderTimeSlots();
+    });
+
+    function renderTimeSlots() {
+        const timeSlots = Storage.getTimeSlots();
+        if (!adminTimeSlotsList) return;
+
+        if (timeSlots.length === 0) {
+            adminTimeSlotsList.innerHTML = '<p class="text-sm text-muted">No hay horarios configurados.</p>';
+            return;
+        }
+
+        adminTimeSlotsList.innerHTML = timeSlots.map(slot => `
+            <div class="card flex items-center justify-between p-4">
+                <div>
+                    <p class="font-bold">${slot.label}</p>
+                    <p class="text-sm ${slot.active ? 'text-green-600' : 'text-muted'}">${slot.active ? 'Activo' : 'Bloqueado'}</p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn btn-outline" onclick="toggleTimeSlot('${slot.id}')">${slot.active ? 'Bloquear' : 'Activar'}</button>
+                    <button class="btn btn-destructive" onclick="deleteTimeSlot('${slot.id}')">Eliminar</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.toggleTimeSlot = (id) => {
+        Storage.toggleTimeSlotActive(id);
+        renderTimeSlots();
+    };
+
+    window.deleteTimeSlot = (id) => {
+        const timeSlots = Storage.getTimeSlots().filter(slot => slot.id !== id);
+        Storage.saveTimeSlots(timeSlots);
+        renderTimeSlots();
     };
 
     // Initial render
