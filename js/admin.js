@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Reservations Logic ---
     const reservationsTable = document.querySelector('#reservationsTable tbody');
+    const reservationsTotalAmountEl = document.getElementById('reservationsTotalAmount');
     const searchInput = document.getElementById('searchReservations');
     const searchDateStart = document.getElementById('searchDateStart');
     const searchDateEnd = document.getElementById('searchDateEnd');
@@ -46,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const filter = searchInput.value.toLowerCase();
         const startDate = searchDateStart.value;
         const endDate = searchDateEnd.value;
+
+        const pricePerPerson = Storage.getPrice();
 
         const filtered = reservations.filter(r => {
             const matchesText = r.userName.toLowerCase().includes(filter) ||
@@ -76,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusLabel = 'Rechazada';
             }
 
+            const totalAmount = (r.people || 0) * pricePerPerson;
+
             return `
             <tr>
                 <td>${new Date(r.date).toLocaleDateString()}</td>
@@ -84,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${r.game}</td>
                 <td>${r.people}</td>
                 <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                <td>$${totalAmount.toLocaleString('es-AR')}</td>
                 <td>
                     <button class="btn btn-edit-blue" onclick="editRes('${r.id}')" style="margin-right: 0.5rem;"><span class="material-symbols-outlined" style="font-size: 16px;">edit_square</span> Editar</button>
                     <button class="btn btn-delete-red" onclick="deleteRes('${r.id}')"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span> Eliminar</button>
@@ -91,6 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </tr>
             `;
         }).join('');
+
+        if (reservationsTotalAmountEl) {
+            const totalRevenue = filtered.reduce((sum, r) => {
+                const people = r.people || 0;
+                return sum + (people * pricePerPerson);
+            }, 0);
+
+            reservationsTotalAmountEl.textContent = `$${totalRevenue.toLocaleString('es-AR')}`;
+        }
     }
 
     searchInput.addEventListener('input', renderReservations);

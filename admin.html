@@ -155,23 +155,33 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-content table-container">
-                        <table id="reservationsTable">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Hora</th>
-                                    <th>Cliente</th>
-                                    <th>Juego</th>
-                                    <th>Personas</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- JS Injected -->
-                            </tbody>
-                        </table>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table id="reservationsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Hora</th>
+                                        <th>Cliente</th>
+                                        <th>Juego</th>
+                                        <th>Personas</th>
+                                        <th>Estado</th>
+                                        <th>Monto total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- JS Injected -->
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #F6F7F9;">
+                                        <td colspan="6" style="text-align: left; font-weight: 600;">Total recaudado:</td>
+                                        <td id="reservationsTotalAmount" style="font-weight: 700;">$0</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
