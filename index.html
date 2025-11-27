@@ -34,12 +34,16 @@
         }
 
         .time-slot {
-            padding: 1rem;
+            padding: 0.5rem 0.75rem;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+            min-height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .time-slot.selected {
@@ -111,7 +115,9 @@
 
             <!-- Botón centrado en el header -->
             <button id="playFreeBtn" type="button" class="btn btn-outline"
-                style="display:flex; align-items:center; gap:4px; padding:0.35rem 0.75rem; font-size:0.8rem; position:absolute; left:50%; transform:translateX(-50%);">
+                style="display:flex; align-items:center; gap:4px; padding:0.35rem 0.75rem; font-size:0.8rem; position:absolute; left:50%; transform:translateX(-50%); background-color:#EDEDF1; transition: background-color 0.2s;"
+                onmouseover="this.style.backgroundColor='#D6D8E1'"
+                onmouseout="this.style.backgroundColor='#EDEDF1'">
                 <span class="material-symbols-outlined header-icon" style="font-size: 18px;">casino</span>
                 <span>Día de Club</span>
             </button>
