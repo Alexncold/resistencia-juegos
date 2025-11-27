@@ -7,7 +7,7 @@
     <title>Reservas - Juegos de Mesa</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=calendar_month,notifications,notifications_unread" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <style>
         .hero-section {
@@ -103,16 +103,25 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="container flex justify-between items-center">
+        <div class="container flex justify-between items-center" style="position: relative;">
 
             <div>
                 <h1 class="font-bold text-xl" style="font-size: 1.5rem;">Reservá tu turno</h1>
             </div>
+
+            <!-- Botón centrado en el header -->
+            <button id="playFreeBtn" type="button" class="btn btn-outline"
+                style="display:flex; align-items:center; gap:4px; padding:0.35rem 0.75rem; font-size:0.8rem; position:absolute; left:50%; transform:translateX(-50%);">
+                <span class="material-symbols-outlined header-icon" style="font-size: 18px;">casino</span>
+                <span>Jugá gratis!</span>
+            </button>
+
             <div class="flex items-center gap-4" style="position: relative;">
 
                 <button id="historyBtn" type="button" style="background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;">
                     <span class="material-symbols-outlined header-icon">calendar_month</span>
                 </button>
+
                 <button id="notificationsBtn" type="button" style="background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;">
                     <span id="notificationsIcon" class="material-symbols-outlined header-icon">notifications</span>
                 </button>
@@ -129,8 +138,12 @@
                 </div>
                 <div id="notificationsDropdown" class="card notification-dropdown hidden">
                     <div class="notification-dropdown-title">Notificaciones</div>
-                    <div class="card-content text-sm" style="text-align: center;">
-                        <div class="notification-empty-title">Tu reserva ha sido confirmada!</div>
+                    <div class="card-content text-sm" style="background-color: #F6F7F9;">
+
+                        <div class="notification-empty-title" style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="text-align: left;">Tu reserva ha sido confirmada!</span>
+                            <span id="notificationCheckIcon" class="material-symbols-outlined" style="margin-left: 8px; cursor: pointer;">check</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -273,6 +286,19 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal Jugá gratis -->
+    <div id="freePlayModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="closeFreePlayModal">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Mesas para jugar gratis</h2>
+            <p class="text-sm text-muted mb-4">Elegí una mesa que te guste y anotate para sumarte a la partida.</p>
+            <div id="freePlayTablesContainer" class="flex flex-col gap-5">
+                <!-- JS: mesas de juego gratis -->
+            </div>
+            <p id="freePlayEmptyState" class="text-sm text-muted mt-2" style="display:none;">Todavía no hay mesas cargadas. Consultá en el local.</p>
+        </div>
+    </div>
 
     <script src="js/storage.js"></script>
     <script src="js/app.js"></script>

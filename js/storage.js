@@ -5,7 +5,8 @@ const Storage = {
         BLOCKED_DATES: 'reservas_blocked',
         USER: 'reservas_user',
         TIME_SLOTS: 'reservas_time_slots',
-        PRICE: 'reservas_price'
+        PRICE: 'reservas_price',
+        FREE_PLAY_TABLES: 'reservas_free_play_tables'
     },
 
     init() {
@@ -51,6 +52,39 @@ const Storage = {
 
         if (!localStorage.getItem(this.KEYS.PRICE)) {
             localStorage.setItem(this.KEYS.PRICE, '5000');
+        }
+
+        if (!localStorage.getItem(this.KEYS.FREE_PLAY_TABLES)) {
+            const defaultTables = [
+                {
+                    id: 'table_1',
+                    number: 1,
+                    game: 'Catan',
+                    capacity: 4,
+                    date: null,
+                    timeRange: null,
+                    players: []
+                },
+                {
+                    id: 'table_2',
+                    number: 2,
+                    game: 'Dixit',
+                    capacity: 6,
+                    date: null,
+                    timeRange: null,
+                    players: []
+                },
+                {
+                    id: 'table_3',
+                    number: 3,
+                    game: 'A decidir en el local',
+                    capacity: 4,
+                    date: null,
+                    timeRange: null,
+                    players: []
+                }
+            ];
+            localStorage.setItem(this.KEYS.FREE_PLAY_TABLES, JSON.stringify(defaultTables));
         }
     },
 
@@ -225,6 +259,77 @@ const Storage = {
         const specialDates = this.getSpecialDates();
         delete specialDates[dateString];
         localStorage.setItem('reservas_special_dates', JSON.stringify(specialDates));
+    },
+
+    // Free Play Tables
+    getFreePlayTables() {
+        return JSON.parse(localStorage.getItem(this.KEYS.FREE_PLAY_TABLES) || '[]');
+    },
+
+    saveFreePlayTables(tables) {
+        localStorage.setItem(this.KEYS.FREE_PLAY_TABLES, JSON.stringify(tables));
+    },
+
+    addFreePlayTable(table) {
+        const tables = this.getFreePlayTables();
+        const newTable = {
+            id: 'table_' + Date.now().toString(),
+            number: table.number,
+            game: table.game,
+            capacity: table.capacity,
+            date: table.date || null,
+            timeRange: table.timeRange || null,
+            players: []
+        };
+        tables.push(newTable);
+        this.saveFreePlayTables(tables);
+        return newTable;
+    },
+
+    updateFreePlayTable(id, updates) {
+        const tables = this.getFreePlayTables();
+        const index = tables.findIndex(t => t.id === id);
+        if (index !== -1) {
+            tables[index] = { ...tables[index], ...updates };
+            this.saveFreePlayTables(tables);
+            return true;
+        }
+        return false;
+    },
+
+    deleteFreePlayTable(id) {
+        const tables = this.getFreePlayTables();
+        const filtered = tables.filter(t => t.id !== id);
+        this.saveFreePlayTables(filtered);
+    },
+
+    addPlayerToFreePlayTable(tableId, user) {
+        const tables = this.getFreePlayTables();
+        const table = tables.find(t => t.id === tableId);
+        if (!table) return { success: false, error: 'Mesa no encontrada' };
+
+        const alreadyJoined = table.players.some(p => p.userId === user.email);
+        if (alreadyJoined) {
+            return { success: false, error: 'Ya estás anotado en esta mesa' };
+        }
+
+        if (table.players.length >= table.capacity) {
+            return { success: false, error: 'La mesa ya está completa' };
+        }
+
+        table.players.push({ userId: user.email, userName: user.name });
+        this.saveFreePlayTables(tables);
+        return { success: true };
+    },
+
+    removePlayerFromFreePlayTable(tableId, userId) {
+        const tables = this.getFreePlayTables();
+        const table = tables.find(t => t.id === tableId);
+        if (!table) return false;
+
+        table.players = table.players.filter(p => p.userId !== userId);
+        this.saveFreePlayTables(tables);
+        return true;
     }
 };
 

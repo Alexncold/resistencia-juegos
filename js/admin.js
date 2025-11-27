@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tab.dataset.tab === 'news') renderAdminNews();
             if (tab.dataset.tab === 'times') renderTimeSlots();
             if (tab.dataset.tab === 'price') renderPrice();
+            if (tab.dataset.tab === 'free-tables') renderFreeTablesAdmin();
         });
     });
 
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchReservations');
     const searchDateStart = document.getElementById('searchDateStart');
     const searchDateEnd = document.getElementById('searchDateEnd');
+    const clearReservationFiltersBtn = document.getElementById('clearReservationFiltersBtn');
 
     function renderReservations() {
         const reservations = Storage.getReservations();
@@ -94,6 +96,14 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', renderReservations);
     searchDateStart.addEventListener('change', renderReservations);
     searchDateEnd.addEventListener('change', renderReservations);
+
+    if (clearReservationFiltersBtn) {
+        clearReservationFiltersBtn.addEventListener('click', () => {
+            if (searchDateStart) searchDateStart.value = '';
+            if (searchDateEnd) searchDateEnd.value = '';
+            renderReservations();
+        });
+    }
 
     // Global scope for onclick
     window.deleteRes = (id) => {
@@ -407,6 +417,164 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeSlots = Storage.getTimeSlots().filter(slot => slot.id !== id);
         Storage.saveTimeSlots(timeSlots);
         renderTimeSlots();
+    };
+
+    // --- Free Play Tables Logic ---
+    const freeTableNumber = document.getElementById('freeTableNumber');
+    const freeTableGame = document.getElementById('freeTableGame');
+    const freeTableCapacity = document.getElementById('freeTableCapacity');
+    const freeTableDate = document.getElementById('freeTableDate');
+    const freeTableTimeRange = document.getElementById('freeTableTimeRange');
+    const adminFreeTablesList = document.getElementById('adminFreeTablesList');
+    const addFreeTableBtn = document.getElementById('addFreeTableBtn');
+
+    // Modal edición de mesa Jugá gratis
+    const editFreeTableModal = document.getElementById('editFreeTableModal');
+    const editFreeTableNumber = document.getElementById('editFreeTableNumber');
+    const editFreeTableGame = document.getElementById('editFreeTableGame');
+    const editFreeTableCapacity = document.getElementById('editFreeTableCapacity');
+    const editFreeTableDate = document.getElementById('editFreeTableDate');
+    const editFreeTableTimeRange = document.getElementById('editFreeTableTimeRange');
+    let currentFreeTableEditId = null;
+
+    if (addFreeTableBtn) {
+        addFreeTableBtn.addEventListener('click', () => {
+            const number = parseInt(freeTableNumber.value, 10);
+            const game = (freeTableGame.value || '').trim();
+            const capacity = parseInt(freeTableCapacity.value, 10);
+            const date = freeTableDate ? freeTableDate.value : '';
+            const timeRange = freeTableTimeRange ? (freeTableTimeRange.value || '').trim() : '';
+
+            if (isNaN(number) || number <= 0) {
+                alert('Ingresá un número de mesa válido');
+                return;
+            }
+            if (!game) {
+                alert('Ingresá el nombre del juego');
+                return;
+            }
+            if (isNaN(capacity) || capacity <= 0) {
+                alert('Ingresá una cantidad de cupos válida');
+                return;
+            }
+
+            Storage.addFreePlayTable({ number, game, capacity, date: date || null, timeRange: timeRange || null });
+
+            freeTableNumber.value = '';
+            freeTableGame.value = '';
+            freeTableCapacity.value = '';
+            if (freeTableDate) freeTableDate.value = '';
+            if (freeTableTimeRange) freeTableTimeRange.value = '';
+
+            renderFreeTablesAdmin();
+        });
+    }
+
+    function renderFreeTablesAdmin() {
+        if (!adminFreeTablesList) return;
+
+        const tables = Storage.getFreePlayTables();
+        if (!tables.length) {
+            adminFreeTablesList.innerHTML = '<p class="text-sm text-muted">No hay mesas configuradas.</p>';
+            return;
+        }
+
+        adminFreeTablesList.innerHTML = tables.map(t => {
+            const players = (t.players || []).map(p => p.userName).join(', ');
+            const playersText = players ? players : 'Sin inscriptos todavía';
+            const dateText = t.date ? new Date(t.date).toLocaleDateString('es-ES') : 'Fecha a definir';
+            const timeText = t.timeRange || 'Horario a definir';
+            return `
+                <div class="card flex items-center justify-between p-4">
+                    <div>
+                        <p class="font-bold">Mesa N° ${t.number} - ${t.game}</p>
+                        <p class="text-sm text-muted">${dateText} | ${timeText}</p>
+                        <p class="text-sm text-muted">Cupos: ${(t.players || []).length}/${t.capacity}</p>
+                        <p class="text-sm text-muted">${playersText}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-outline" onclick="editFreeTable('${t.id}')">Editar</button>
+                        <button class="btn btn-destructive" onclick="deleteFreeTable('${t.id}')">Eliminar</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.editFreeTable = (id) => {
+        const tables = Storage.getFreePlayTables();
+        const table = tables.find(t => t.id === id);
+        if (!table) {
+            alert('Mesa no encontrada');
+            return;
+        }
+
+        if (!editFreeTableModal || !editFreeTableNumber || !editFreeTableGame || !editFreeTableCapacity) {
+            alert('No se encontró el modal de edición de mesa. Recargá el admin e intentá de nuevo.');
+            return;
+        }
+
+        currentFreeTableEditId = id;
+        editFreeTableNumber.value = table.number;
+        editFreeTableGame.value = table.game;
+        editFreeTableCapacity.value = table.capacity;
+        if (editFreeTableDate) editFreeTableDate.value = table.date || '';
+        if (editFreeTableTimeRange) editFreeTableTimeRange.value = table.timeRange || '';
+
+        editFreeTableModal.classList.add('open');
+    };
+
+    window.closeEditFreeTableModal = () => {
+        if (!editFreeTableModal) return;
+        editFreeTableModal.classList.remove('open');
+        currentFreeTableEditId = null;
+    };
+
+    window.saveEditFreeTable = () => {
+        if (!currentFreeTableEditId) {
+            closeEditFreeTableModal();
+            return;
+        }
+
+        const number = parseInt(editFreeTableNumber.value, 10);
+        const game = (editFreeTableGame.value || '').trim();
+        const capacity = parseInt(editFreeTableCapacity.value, 10);
+        const date = editFreeTableDate ? editFreeTableDate.value : '';
+        const timeRange = editFreeTableTimeRange ? (editFreeTableTimeRange.value || '').trim() : '';
+
+        if (isNaN(number) || number <= 0) {
+            alert('Ingresá un número de mesa válido');
+            return;
+        }
+        if (!game) {
+            alert('Ingresá el nombre del juego');
+            return;
+        }
+        if (isNaN(capacity) || capacity <= 0) {
+            alert('Ingresá una cantidad de cupos válida');
+            return;
+        }
+
+        const success = Storage.updateFreePlayTable(currentFreeTableEditId, {
+            number,
+            game,
+            capacity,
+            date: date || null,
+            timeRange: timeRange || null
+        });
+        if (!success) {
+            alert('No se pudo actualizar la mesa');
+            return;
+        }
+
+        closeEditFreeTableModal();
+        renderFreeTablesAdmin();
+    };
+
+    window.deleteFreeTable = (id) => {
+        if (!confirm('¿Eliminar esta mesa? Se borrarán también los jugadores inscriptos.')) return;
+        Storage.deleteFreePlayTable(id);
+        renderFreeTablesAdmin();
     };
 
     // Initial render

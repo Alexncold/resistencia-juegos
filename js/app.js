@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyBtn: document.getElementById('historyBtn'),
         notificationsBtn: document.getElementById('notificationsBtn'),
         notificationsIcon: document.getElementById('notificationsIcon'),
+        playFreeBtn: document.getElementById('playFreeBtn'),
 
         // Calendar
         currentMonthDisplay: document.getElementById('currentMonthDisplay'),
@@ -44,7 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMsg: document.getElementById('errorMsg'),
 
         // News
-        newsContainer: document.getElementById('newsContainer')
+        newsContainer: document.getElementById('newsContainer'),
+
+        // Free play modal
+        freePlayModal: document.getElementById('freePlayModal'),
+        freePlayTablesContainer: document.getElementById('freePlayTablesContainer'),
+        freePlayEmptyState: document.getElementById('freePlayEmptyState'),
+        closeFreePlayModal: document.getElementById('closeFreePlayModal')
     };
 
     // State
@@ -80,6 +87,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (els.playFreeBtn && els.freePlayModal) {
+        els.playFreeBtn.addEventListener('click', () => {
+            renderFreePlayTables();
+            els.freePlayModal.classList.add('open');
+        });
+
+        els.closeFreePlayModal.addEventListener('click', () => {
+            els.freePlayModal.classList.remove('open');
+        });
+
+        els.freePlayModal.addEventListener('click', (e) => {
+            if (e.target === els.freePlayModal) {
+                els.freePlayModal.classList.remove('open');
+            }
+        });
+    }
+
     if (els.notificationsBtn) {
         els.notificationsBtn.addEventListener('click', (e) => {
             if (!hasConfirmedReservation()) return;
@@ -89,6 +113,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
             e.stopPropagation();
             dropdown.classList.toggle('hidden');
+        });
+    }
+
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('notificationsDropdown');
+        if (!dropdown) return;
+
+        // Si está oculto, no hacemos nada
+        if (dropdown.classList.contains('hidden')) return;
+
+        const clickInsideDropdown = dropdown.contains(e.target);
+        const clickOnButton = els.notificationsBtn && els.notificationsBtn.contains(e.target);
+
+        if (!clickInsideDropdown && !clickOnButton) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    const notificationCheckIcon = document.getElementById('notificationCheckIcon');
+    if (notificationCheckIcon) {
+        notificationCheckIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const container = document.querySelector('#notificationsDropdown .notification-empty-title');
+            const cardContent = document.querySelector('#notificationsDropdown .card-content');
+
+            if (container) {
+                container.textContent = 'No tenés notificaciones nuevas';
+                container.style.fontWeight = '400';
+            }
+
+            if (cardContent) {
+                cardContent.style.backgroundColor = '#ffffff';
+            }
+
+            // Volver el ícono de la campana al estado normal (sin notificación)
+            if (els.notificationsIcon) {
+                els.notificationsIcon.textContent = 'notifications';
+            }
         });
     }
 
@@ -472,5 +535,93 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initial render
         showNews(currentIndex);
         startAutoPlay();
+    }
+
+    function renderFreePlayTables() {
+        if (!els.freePlayTablesContainer) return;
+
+        const tables = Storage.getFreePlayTables();
+        els.freePlayTablesContainer.innerHTML = '';
+
+        if (!tables.length) {
+            if (els.freePlayEmptyState) els.freePlayEmptyState.style.display = 'block';
+            return;
+        }
+
+        if (els.freePlayEmptyState) els.freePlayEmptyState.style.display = 'none';
+
+        tables.forEach(table => {
+            const currentPlayers = table.players || [];
+            const isFull = currentPlayers.length >= table.capacity;
+            const alreadyJoined = currentPlayers.some(p => p.userId === user.email);
+            const dateLabel = table.date ? new Date(table.date).toLocaleDateString('es-ES') : 'Fecha a definir';
+            const timeLabel = table.timeRange || 'Horario a definir';
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.marginBottom = '1rem';
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            content.style.paddingTop = '1rem';
+            content.style.paddingBottom = '1rem';
+
+            const header = document.createElement('div');
+            header.className = 'flex justify-between items-center mb-2';
+            header.innerHTML = `
+                <div>
+                    <div class="text-sm text-muted">Mesa N° ${table.number} · ${dateLabel} · ${timeLabel}</div>
+                    <div class="font-bold">
+                        ${table.game}${alreadyJoined ? ' - <span style="font-weight: 400;">Ya estás anotado en esta mesa</span>' : ''}
+                    </div>
+                </div>
+                <div class="text-sm text-muted">${currentPlayers.length}/${table.capacity} cupos</div>
+            `;
+
+            const actionRow = document.createElement('div');
+            actionRow.className = 'mt-2 flex justify-end';
+
+            const btn = document.createElement('button');
+
+            if (alreadyJoined) {
+                btn.className = 'btn btn-outline';
+                btn.style.backgroundColor = '#F6F7F9';
+                btn.textContent = 'Cancelar';
+                btn.addEventListener('click', () => {
+                    const success = Storage.removePlayerFromFreePlayTable(table.id, user.email);
+                    if (!success) {
+                        alert('No se pudo cancelar tu inscripción en la mesa');
+                        return;
+                    }
+                    alert('Se canceló tu inscripción en esta mesa.');
+                    renderFreePlayTables();
+                });
+            } else if (isFull) {
+                btn.className = 'btn btn-primary';
+                btn.textContent = 'Mesa completa';
+                btn.disabled = true;
+            } else {
+                btn.className = 'btn btn-primary';
+                btn.textContent = 'Anotarme';
+                btn.addEventListener('click', () => {
+                    const result = Storage.addPlayerToFreePlayTable(table.id, user);
+                    if (!result.success) {
+                        alert(result.error || 'No se pudo anotar en la mesa');
+                        return;
+                    }
+                    alert('¡Te anotaste en la mesa!');
+                    renderFreePlayTables();
+                });
+            }
+
+            actionRow.appendChild(btn);
+            content.appendChild(header);
+
+            // En la página de reservas ya no mostramos el listado de participantes
+
+            content.appendChild(actionRow);
+            card.appendChild(content);
+            els.freePlayTablesContainer.appendChild(card);
+        });
     }
 });
