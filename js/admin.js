@@ -59,20 +59,36 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchesText && matchesDate;
         });
 
-        reservationsTable.innerHTML = filtered.map(r => `
+        reservationsTable.innerHTML = filtered.map(r => {
+            let statusClass = 'status-pending';
+            let statusLabel = 'Pendiente';
+
+            if (r.status === 'confirmed') {
+                statusClass = 'status-confirmed';
+                statusLabel = 'Aceptada';
+            } else if (r.status === 'pending_payment' || r.status === 'pending') {
+                statusClass = 'status-pending';
+                statusLabel = 'Pendiente de pago';
+            } else if (r.status === 'rejected') {
+                statusClass = 'status-rejected';
+                statusLabel = 'Rechazada';
+            }
+
+            return `
             <tr>
                 <td>${new Date(r.date).toLocaleDateString()}</td>
                 <td>${r.time}</td>
                 <td>${r.userName}</td>
                 <td>${r.game}</td>
                 <td>${r.people}</td>
-                <td><span class="status-badge status-${r.status === 'confirmed' ? 'confirmed' : 'pending'}">${r.status}</span></td>
+                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
                 <td>
                     <button class="btn btn-edit-blue" onclick="editRes('${r.id}')" style="margin-right: 0.5rem;"><span class="material-symbols-outlined" style="font-size: 16px;">edit_square</span> Editar</button>
                     <button class="btn btn-delete-red" onclick="deleteRes('${r.id}')"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span> Eliminar</button>
                 </td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
     }
 
     searchInput.addEventListener('input', renderReservations);

@@ -103,6 +103,11 @@
             background-color: #dcfce7;
             color: #16a34a;
         }
+
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
     </style>
 </head>
 
@@ -249,18 +254,18 @@
 
             <!-- Price Tab -->
             <div id="price" class="tab-content">
-                <h2 class="text-xl font-bold mb-4">Precio por Reserva</h2>
+                <h2 class="text-xl font-bold mb-4">Precio por Persona</h2>
                 <div class="card" style="max-width: 400px;">
                     <div class="card-header">
-                        <h3 class="card-title text-sm">Modificar precio</h3>
+                        <h3 class="card-title text-sm">Modificar precio por persona</h3>
                     </div>
                     <div class="card-content flex flex-col gap-4">
                         <div>
-                            <label class="text-sm font-bold" for="priceInput">Precio por turno (ARS)</label>
+                            <label class="text-sm font-bold" for="priceInput">Precio por persona (ARS)</label>
                             <input type="number" id="priceInput" class="input" min="1" step="100" placeholder="5000">
                         </div>
                         <button id="savePriceBtn" class="btn btn-primary">Guardar precio</button>
-                        <p class="text-sm text-muted">Este precio se mostrará en la página de reservas y se guardará en cada reserva nueva.</p>
+                        <p class="text-sm text-muted">Este precio se multiplicará por la cantidad de personas y se mostrará en la página de reservas.</p>
                     </div>
                 </div>
             </div>
@@ -330,6 +335,7 @@
                     <select id="editStatus" class="input">
                         <option value="pending">Pendiente</option>
                         <option value="confirmed">Confirmada</option>
+                        <option value="rejected">Rechazada</option>
                     </select>
                 </div>
                 <div class="flex gap-2 mt-4">

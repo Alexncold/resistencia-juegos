@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
         userName: document.getElementById('userName'),
         userAvatar: document.getElementById('userAvatar'),
         logoutBtn: document.getElementById('logoutBtn'),
+        historyBtn: document.getElementById('historyBtn'),
+        notificationsBtn: document.getElementById('notificationsBtn'),
+        notificationsIcon: document.getElementById('notificationsIcon'),
 
         // Calendar
         currentMonthDisplay: document.getElementById('currentMonthDisplay'),
@@ -49,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDate: new Date(),
         selectedDate: null,
         selectedTime: null,
-        people: 2,
+        people: 1,
         gameType: 'decide_later',
         gameName: '',
         blockedDates: Storage.getBlockedDates(),
@@ -59,10 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Init
     els.userName.textContent = user.name;
     els.userAvatar.textContent = user.avatar;
-    const price = Storage.getPrice();
-    if (els.summaryTotal) {
-        els.summaryTotal.textContent = `$${price}`;
-    }
+    const price = Storage.getPrice(); // precio por persona (base 5000)
+    updateNotificationsIcon();
     renderCalendar();
     renderTimeSlots();
     renderNews();
@@ -72,6 +73,24 @@ document.addEventListener('DOMContentLoaded', () => {
         Storage.logout();
         window.location.href = 'login.html';
     });
+
+    if (els.historyBtn) {
+        els.historyBtn.addEventListener('click', () => {
+            window.location.href = 'history.html';
+        });
+    }
+
+    if (els.notificationsBtn) {
+        els.notificationsBtn.addEventListener('click', (e) => {
+            if (!hasConfirmedReservation()) return;
+
+            const dropdown = document.getElementById('notificationsDropdown');
+            if (!dropdown) return;
+
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+        });
+    }
 
     els.prevMonthBtn.addEventListener('click', () => {
         const today = new Date();
@@ -137,7 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pay Button
     els.payBtn.addEventListener('click', () => {
-        if (!validate()) return;
+        if (!validate()) {
+            alert('Por favor completá todos los pasos de la reserva: fecha, horario y juego (si elegiste "Tengo un juego en mente").');
+            return;
+        }
+
+        const pricePerPerson = Storage.getPrice();
+        const total = pricePerPerson * state.people;
 
         const reservation = {
             userId: user.email,
@@ -146,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             time: state.selectedTime,
             people: state.people,
             game: state.gameType === 'specific' ? state.gameName : 'A decidir en el local',
-            total: Storage.getPrice()
+            total
         };
 
         Storage.addReservation(reservation);
@@ -269,6 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
             els.summaryGame.textContent = 'A decidir en el local';
         }
 
+        // Total = precio por persona * cantidad de personas
+        const pricePerPerson = Storage.getPrice();
+        const total = pricePerPerson * state.people;
+        if (els.summaryTotal) {
+            els.summaryTotal.textContent = `$${total}`;
+        }
+
         validate(true);
     }
 
@@ -287,8 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
             error = 'Ingresá el nombre del juego';
         }
 
-        els.payBtn.disabled = !isValid;
-
         if (!silent && !isValid) {
             els.errorMsg.textContent = error;
             els.errorMsg.classList.remove('hidden');
@@ -297,6 +327,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return isValid;
+    }
+
+    function hasConfirmedReservation() {
+        const reservations = Storage.getReservations ? Storage.getReservations() : [];
+        return reservations.some(r => r.userId === user.email && r.status === 'confirmed');
+    }
+
+    function updateNotificationsIcon() {
+        if (!els.notificationsIcon) return;
+
+        const hasConfirmed = hasConfirmedReservation();
+        els.notificationsIcon.textContent = hasConfirmed ? 'notifications_unread' : 'notifications';
+
+        const dropdown = document.getElementById('notificationsDropdown');
+        if (dropdown) {
+            // Si no hay confirmadas, aseguramos que el dropdown esté oculto
+            if (!hasConfirmed && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        }
     }
 
     function renderNews() {
