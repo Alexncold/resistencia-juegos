@@ -22,7 +22,7 @@
         }
 
         .sidebar {
-            background-color: var(--secondary);
+            background-color: #F6F7F9;
             padding: 2rem 1rem;
             border-right: 1px solid var(--border);
         }
@@ -44,8 +44,25 @@
         }
 
         .nav-item.active {
-            background-color: var(--primary);
-            color: var(--primary-foreground);
+            background-color: #EDEDF1;
+            color: var(--foreground);
+            border: 1px solid #D6D8E1;
+            border-radius: 6px;
+        }
+        
+        .nav-item.active .material-symbols-outlined {
+            color: #6A718D;
+        }
+        
+        .nav-item.active span:not(.material-symbols-outlined) {
+            font-weight: 600;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background-color: var(--border);
+            margin: 1rem 0;
+            width: 100%;
         }
 
         .admin-content {
@@ -120,15 +137,35 @@
             </div>
 
             <nav>
-                <div class="nav-item active" data-tab="reservations">Reservas</div>
-                <div class="nav-item" data-tab="calendar">Calendario</div>
-                <div class="nav-item" data-tab="times">Horarios</div>
-                <div class="nav-item" data-tab="price">Precio</div>
-                <div class="nav-item" data-tab="news">Novedades</div>
-                <div class="nav-item" data-tab="free-tables">Día de Club</div>
-                <div class="nav-item" id="logoutBtn" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div class="nav-item active" data-tab="reservations">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">event</span>
+                    <span>Reservas</span>
+                </div>
+                <div class="nav-item" data-tab="calendar">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">edit_calendar</span>
+                    <span>Calendario</span>
+                </div>
+                <div class="nav-item" data-tab="times">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">nest_clock_farsight_analog</span>
+                    <span>Horarios</span>
+                </div>
+                <div class="nav-item" data-tab="price">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">attach_money</span>
+                    <span>Precio</span>
+                </div>
+                <div class="nav-item" data-tab="news">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">newsmode</span>
+                    <span>Novedades</span>
+                </div>
+                <div class="nav-item" data-tab="free-tables">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">card_membership</span>
+                    <span>Día de Club</span>
+                </div>
+                
+                <div class="nav-item" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-bottom: 1rem;"></div>
+                <div class="nav-item" id="logoutBtn">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">logout</span>
                     <span>Cerrar Sesión</span>
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">logout</span>
                 </div>
             </nav>
         </aside>
