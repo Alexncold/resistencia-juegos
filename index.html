@@ -101,6 +101,75 @@
                 opacity: 1;
             }
         }
+
+        /* Estilos para el modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Asegurar que el contenido del modal esté por encima del overlay */
+        .modal-content {
+            position: relative;
+            z-index: 10001;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #1B203D;
+        }
     </style>
 </head>
 
@@ -115,11 +184,12 @@
 
             <!-- Botón centrado en el header -->
             <button id="playFreeBtn" type="button" class="btn btn-outline"
-                style="display:flex; align-items:center; gap:4px; padding:0.35rem 0.75rem; font-size:0.8rem; position:absolute; left:50%; transform:translateX(-50%); background-color:#EDEDF1; transition: background-color 0.2s;"
+                style="display:flex; align-items:center; gap:4px; padding:0.35rem 0.75rem; font-size:0.8rem; position:absolute; left:50%; transform:translateX(-50%); background-color:#EDEDF1; transition: background-color 0.2s; border-radius: 9999px;"
                 onmouseover="this.style.backgroundColor='#D6D8E1'"
                 onmouseout="this.style.backgroundColor='#EDEDF1'">
                 <span class="material-symbols-outlined header-icon" style="font-size: 18px;">casino</span>
-                <span>Día de Club</span>
+                <span style="font-weight: bold;">Día de Club</span>
+                <span class="material-symbols-outlined header-icon" style="font-size: 18px;">casino</span>
             </button>
 
             <div class="flex items-center gap-4" style="position: relative;">
@@ -303,6 +373,56 @@
                 <!-- JS: mesas de juego gratis -->
             </div>
             <p id="freePlayEmptyState" class="text-sm text-muted mt-2" style="display:none;">Todavía no hay mesas cargadas. Consultá en el local.</p>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación de Reserva -->
+    <div id="reservationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" id="closeReservationModal">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Confirmar Reserva</h2>
+            
+            <div class="space-y-4 mb-6">
+                <div class="flex justify-between">
+                    <span class="text-muted">Fecha:</span>
+                    <span id="modalDate" class="font-medium"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Horario:</span>
+                    <span id="modalTime" class="font-medium"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Personas:</span>
+                    <span id="modalPeople" class="font-medium"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-muted">Juego:</span>
+                    <span id="modalGame" class="font-medium"></span>
+                </div>
+                <div class="flex justify-between border-t border-gray-200 pt-3 mt-3">
+                    <span class="font-bold">Total:</span>
+                    <span id="modalTotal" class="font-bold text-lg"></span>
+                </div>
+            </div>
+            
+            <div class="mt-2 p-4 bg-gray-50 rounded-md">
+                <p class="text-sm text-center text-gray-700 mb-4">
+                    Transfiere <span id="modalTransferAmount" class="font-bold">$0</span> al siguiente alias y luego confirma tu reserva:
+                </p>
+                <div class="mt-4 mb-2 flex items-center justify-center gap-2">
+                    <span id="aliasText" class="font-mono bg-white px-4 py-2 rounded-l border border-r-0 border-gray-200 text-primary-600 font-bold inline-block">ALIAS.DE.EJEMPLO</span>
+                    <button id="copyAliasBtn" class="bg-white hover:bg-gray-50 text-gray-600 px-3 py-2 rounded-r border border-l-0 border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-colors" title="Copiar alias">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="w-full mt-6" style="display: flex; justify-content: flex-end;">
+                <div class="flex" style="gap: 12px;">
+                    <button id="cancelReservationBtn" class="btn btn-outline">Cancelar</button>
+                    <button id="confirmReservationBtn" class="btn btn-primary">Confirmar Reserva</button>
+                </div>
+            </div>
         </div>
     </div>
 

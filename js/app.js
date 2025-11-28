@@ -46,6 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // News
         newsContainer: document.getElementById('newsContainer'),
+        
+        // Reservation modal
+        reservationModal: document.getElementById('reservationModal'),
+        closeReservationModal: document.getElementById('closeReservationModal'),
+        cancelReservationBtn: document.getElementById('cancelReservationBtn'),
+        confirmReservationBtn: document.getElementById('confirmReservationBtn'),
+        copyAliasBtn: document.getElementById('copyAliasBtn'),
+        aliasText: document.getElementById('aliasText'),
+        modalDate: document.getElementById('modalDate'),
+        modalTime: document.getElementById('modalTime'),
+        modalPeople: document.getElementById('modalPeople'),
+        modalGame: document.getElementById('modalGame'),
+        modalTotal: document.getElementById('modalTotal'),
 
         // Free play modal
         freePlayModal: document.getElementById('freePlayModal'),
@@ -90,16 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (els.playFreeBtn && els.freePlayModal) {
         els.playFreeBtn.addEventListener('click', () => {
             renderFreePlayTables();
-            els.freePlayModal.classList.add('open');
+            els.freePlayModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         });
 
         els.closeFreePlayModal.addEventListener('click', () => {
-            els.freePlayModal.classList.remove('open');
+            els.freePlayModal.classList.remove('active');
+            document.body.style.overflow = '';
         });
 
         els.freePlayModal.addEventListener('click', (e) => {
             if (e.target === els.freePlayModal) {
-                els.freePlayModal.classList.remove('open');
+                els.freePlayModal.classList.remove('active');
+                document.body.style.overflow = '';
             }
         });
     }
@@ -217,30 +233,138 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSummary();
     });
 
-    // Pay Button
+    // Pay Button - Muestra el modal de confirmación
     els.payBtn.addEventListener('click', () => {
         if (!validate()) {
             alert('Por favor completá todos los pasos de la reserva: fecha, horario y juego (si elegiste "Tengo un juego en mente").');
             return;
         }
-
+        
+        // Mostrar el modal de confirmación
+        showReservationModal();
+    });
+    
+    // Mostrar el modal de confirmación con los datos de la reserva
+    function showReservationModal() {
         const pricePerPerson = Storage.getPrice();
         const total = pricePerPerson * state.people;
+        const gameName = state.gameType === 'specific' ? state.gameName : 'A decidir en el local';
+        
+        // Formatear la fecha
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = state.selectedDate.toLocaleDateString('es-AR', options);
+        
+        // Actualizar el modal con los datos
+        els.modalDate.textContent = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        els.modalTime.textContent = state.selectedTime;
+        els.modalPeople.textContent = state.people;
+        els.modalGame.textContent = gameName;
+        
+        // Actualizar totales
+        const formattedTotal = total.toLocaleString('es-AR');
+        els.modalTotal.textContent = `$${formattedTotal}`;
+        
+        // Actualizar el monto de transferencia
+        const transferAmountEl = document.getElementById('modalTransferAmount');
+        if (transferAmountEl) {
+            transferAmountEl.textContent = `$${formattedTotal}`;
+        }
+        
+        // Mostrar el modal
+        els.reservationModal.style.display = 'flex';
+        setTimeout(() => {
+            els.reservationModal.classList.add('active');
+        }, 10);
+    }
+    
+    // Cerrar el modal de confirmación
+    function closeReservationModal() {
+        els.reservationModal.classList.remove('active');
+        setTimeout(() => {
+            els.reservationModal.style.display = 'none';
+        }, 300);
+    }
+    
+    // Función para copiar el alias al portapapeles
+    function copyAliasToClipboard() {
+        const aliasText = els.aliasText.textContent;
+        navigator.clipboard.writeText(aliasText).then(() => {
+            // Cambiar temporalmente el ícono a "check" para indicar que se copió
+            const icon = els.copyAliasBtn.querySelector('.material-symbols-outlined');
+            if (icon) {
+                const originalText = icon.textContent;
+                icon.textContent = 'check';
+                els.copyAliasBtn.setAttribute('title', '¡Copiado!');
+                
+                // Restaurar el ícono después de 2 segundos
+                setTimeout(() => {
+                    icon.textContent = originalText;
+                    els.copyAliasBtn.setAttribute('title', 'Copiar alias');
+                }, 2000);
+            }
+        }).catch(err => {
+            console.error('Error al copiar el alias:', err);
+            alert('No se pudo copiar el alias. Por favor, cópialo manualmente.');
+        });
+    }
 
-        const reservation = {
-            userId: user.email,
-            userName: user.name,
-            date: state.selectedDate.toISOString(),
-            time: state.selectedTime,
-            people: state.people,
-            game: state.gameType === 'specific' ? state.gameName : 'A decidir en el local',
-            total
-        };
+    // Event listeners para los botones del modal
+    if (els.closeReservationModal) {
+        els.closeReservationModal.addEventListener('click', closeReservationModal);
+    }
+    
+    if (els.cancelReservationBtn) {
+        els.cancelReservationBtn.addEventListener('click', closeReservationModal);
+    }
+    
+    // Event listener para el botón de copiar alias
+    if (els.copyAliasBtn) {
+        els.copyAliasBtn.addEventListener('click', copyAliasToClipboard);
+    }
+    
+    // Confirmar la reserva
+    if (els.confirmReservationBtn) {
+        els.confirmReservationBtn.addEventListener('click', () => {
+            const pricePerPerson = Storage.getPrice();
+            const total = pricePerPerson * state.people;
+            const gameName = state.gameType === 'specific' ? state.gameName : 'A decidir en el local';
+            
+            const reservation = {
+                id: Date.now().toString(),
+                userId: user.email,
+                userName: user.name,
+                date: state.selectedDate.toISOString(),
+                time: state.selectedTime,
+                people: state.people,
+                game: gameName,
+                total: total,
+                status: 'pending_payment',
+                createdAt: new Date().toISOString()
+            };
 
-        Storage.addReservation(reservation);
-        alert('¡Reserva creada con éxito! Redirigiendo a MercadoPago...');
-        // Reset or redirect
-        window.location.reload();
+            Storage.addReservation(reservation);
+            
+            // Cerrar el modal
+            closeReservationModal();
+            
+            // Mostrar mensaje de éxito y redirigir
+            alert('¡Reserva creada con éxito! Pronto nos pondremos en contacto para confirmar el pago.');
+            window.location.href = 'history.html';
+        });
+    }
+    
+    // Cerrar el modal al hacer clic fuera del contenido
+    els.reservationModal.addEventListener('click', (e) => {
+        if (e.target === els.reservationModal) {
+            closeReservationModal();
+        }
+    });
+    
+    // Cerrar el modal con la tecla Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && els.reservationModal.style.display === 'flex') {
+            closeReservationModal();
+        }
     });
 
     // Functions
