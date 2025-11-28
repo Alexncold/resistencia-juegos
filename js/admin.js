@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchReservations');
     const searchDateStart = document.getElementById('searchDateStart');
     const searchDateEnd = document.getElementById('searchDateEnd');
+    const searchStatus = document.getElementById('searchStatus');
     const clearReservationFiltersBtn = document.getElementById('clearReservationFiltersBtn');
 
     function renderReservations() {
@@ -47,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filter = searchInput.value.toLowerCase();
         const startDate = searchDateStart.value;
         const endDate = searchDateEnd.value;
+        const statusFilter = searchStatus.value;
 
         const pricePerPerson = Storage.getPrice();
 
@@ -61,7 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (startDate) matchesDate = matchesDate && resDate >= startDate;
             if (endDate) matchesDate = matchesDate && resDate <= endDate;
 
-            return matchesText && matchesDate;
+            let matchesStatus = true;
+            if (statusFilter) {
+                if (statusFilter === 'pending') {
+                    matchesStatus = r.status === 'pending' || r.status === 'pending_payment';
+                } else {
+                    matchesStatus = r.status === statusFilter;
+                }
+            }
+
+            return matchesText && matchesDate && matchesStatus;
         });
 
         reservationsTable.innerHTML = filtered.map(r => {
@@ -111,11 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', renderReservations);
     searchDateStart.addEventListener('change', renderReservations);
     searchDateEnd.addEventListener('change', renderReservations);
+    searchStatus.addEventListener('change', renderReservations);
 
     if (clearReservationFiltersBtn) {
         clearReservationFiltersBtn.addEventListener('click', () => {
             if (searchDateStart) searchDateStart.value = '';
             if (searchDateEnd) searchDateEnd.value = '';
+            if (searchStatus) searchStatus.value = '';
             renderReservations();
         });
     }

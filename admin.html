@@ -147,6 +147,13 @@
                                 <label for="searchDateEnd" class="text-sm font-bold">Hasta:</label>
                                 <input type="date" id="searchDateEnd" class="input" style="width: auto;"
                                     title="Fecha Fin">
+                                <label for="searchStatus" class="text-sm font-bold">Estado:</label>
+                                <select id="searchStatus" class="input" style="width: auto;">
+                                    <option value="">Todos los estados</option>
+                                    <option value="pending">Pendiente de pago</option>
+                                    <option value="confirmed">Confirmada</option>
+                                    <option value="rejected">Rechazada</option>
+                                </select>
                             </div>
                             <button id="clearReservationFiltersBtn" class="btn btn-outline"
                                 style="display: flex; align-items: center; gap: 4px; margin-left: 12px; background-color: #F6F7F9;">
