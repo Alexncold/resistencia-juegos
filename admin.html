@@ -126,7 +126,10 @@
                 <div class="nav-item" data-tab="price">Precio</div>
                 <div class="nav-item" data-tab="news">Novedades</div>
                 <div class="nav-item" data-tab="free-tables">Día de Club</div>
-                <div class="nav-item" id="logoutBtn">Cerrar Sesión</div>
+                <div class="nav-item" id="logoutBtn" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <span>Cerrar Sesión</span>
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">logout</span>
+                </div>
             </nav>
         </aside>
 
@@ -136,7 +139,7 @@
             <div id="reservations" class="tab-content active">
                 <h2 class="text-xl font-bold mb-4">Gestión de Reservas</h2>
                 <div class="card">
-                    <div class="card-header flex flex-col gap-4">
+                    <div class="card-header flex flex-col gap-6">
                         <input type="text" id="searchReservations" class="input"
                             placeholder="Buscar por nombre o juego..." style="min-width: 200px;">
                         <div class="flex gap-3 items-center flex-wrap">
@@ -188,6 +191,25 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                            <div class="pagination-container">
+                                <div class="pagination">
+                                    <button id="prevPageBtn" class="pagination-btn" aria-label="Página anterior">
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <span id="currentPageDisplay" class="pagination-page" style="background-color: #EDEDF1 !important; border-color: #D6D8E1 !important; color: var(--foreground) !important; font-weight: 600;">1</span>
+                                    <button id="nextPageBtn" class="pagination-btn" aria-label="Página siguiente">
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                                <div class="items-per-page">
+                                    <span class="text-sm text-gray-600">Mostrar:</span>
+                                    <select id="itemsPerPageSelect" class="pagination-select">
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

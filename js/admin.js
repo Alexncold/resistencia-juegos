@@ -42,6 +42,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchDateEnd = document.getElementById('searchDateEnd');
     const searchStatus = document.getElementById('searchStatus');
     const clearReservationFiltersBtn = document.getElementById('clearReservationFiltersBtn');
+    
+    // Variables de paginación
+    let currentPage = 1;
+    let itemsPerPage = 20;
+    const itemsPerPageSelect = document.getElementById('itemsPerPageSelect');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const currentPageDisplay = document.getElementById('currentPageDisplay');
+    
+    // Event listeners para la paginación
+    if (itemsPerPageSelect) {
+        itemsPerPageSelect.addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value, 10);
+            currentPage = 1; // Resetear a la primera página
+            renderReservations();
+        });
+    }
+    
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderReservations();
+            }
+        });
+    }
+    
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', () => {
+            currentPage++;
+            renderReservations();
+        });
+    }
 
     function renderReservations() {
         const reservations = Storage.getReservations();
@@ -52,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pricePerPerson = Storage.getPrice();
 
+        // Filtrar las reservaciones
         const filtered = reservations.filter(r => {
             const matchesText = r.userName.toLowerCase().includes(filter) ||
                 r.game.toLowerCase().includes(filter);
@@ -74,6 +108,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return matchesText && matchesDate && matchesStatus;
         });
+
+        // Calcular el total de páginas
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        
+        // Asegurarse de que la página actual sea válida
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        } else if (currentPage < 1) {
+            currentPage = 1;
+        }
+        
+        // Actualizar la visualización de la página actual
+        if (currentPageDisplay) {
+            currentPageDisplay.textContent = currentPage;
+            // Aplicar estilos en línea para asegurar que se mantengan
+            currentPageDisplay.style.backgroundColor = '#EDEDF1';
+            currentPageDisplay.style.borderColor = '#D6D8E1';
+            currentPageDisplay.style.color = 'var(--foreground)';
+            currentPageDisplay.style.fontWeight = '600';
+        }
+        
+        // Los botones de navegación siempre están habilitados
+        // No se deshabilitan al llegar a los límites
+        
+        // Obtener las reservaciones para la página actual
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedReservations = filtered.slice(startIndex, endIndex);
+        
+        // Limpiar la tabla
+        reservationsTable.innerHTML = '';
 
         reservationsTable.innerHTML = filtered.map(r => {
             let statusClass = 'status-pending';

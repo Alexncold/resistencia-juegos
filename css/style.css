@@ -232,8 +232,8 @@ tbody tr:hover {
 
 .btn-delete-red:hover {
     background-color: #fecaca;
-    border-color: #b91c1c;
-    color: #b91c1c;
+    border-color: #b91c1b;
+    color: #b91c1b;
 }
 
 .btn-edit-blue {
@@ -284,7 +284,7 @@ tbody tr:hover {
     padding: 1.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
+    gap: 1.5rem;
 }
 
 .card-title {
@@ -559,4 +559,112 @@ tbody tr:hover {
     .grid-cols-2 {
         grid-template-columns: 1fr;
     }
+}
+
+/* Paginación */
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: white;
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .pagination-container {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
+    background: none;
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    color: var(--primary);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn .material-symbols-outlined {
+font-size: 1.25rem;
+}
+
+.pagination-page {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+min-width: 2.5rem;
+height: 2.5rem;
+padding: 0.5rem 0.75rem;
+border-radius: var(--radius);
+border: 1px solid var(--border);
+background-color: white;
+font-size: 0.875rem;
+font-weight: 500;
+color: var(--foreground);
+margin: 0 0.5rem;
+transition: all 0.2s ease;
+}
+
+.pagination .pagination-page.active {
+    background-color: #EDEDF1 !important;
+    color: var(--primary) !important;
+    border: 1px solid #D6D8E1 !important;
+    font-weight: 600;
+    box-shadow: none !important;
+}
+
+.items-per-page {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.pagination-select {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: white;
+    font-size: 0.875rem;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.pagination-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(27, 32, 61, 0.1);
 }

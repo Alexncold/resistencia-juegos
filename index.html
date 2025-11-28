@@ -35,7 +35,7 @@
 
         .time-slot {
             padding: 0.5rem 0.75rem;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: var(--radius);
             text-align: center;
             cursor: pointer;
@@ -170,6 +170,29 @@
             margin-top: 0;
             color: #1B203D;
         }
+
+        /* Estilos para los botones de navegación del calendario */
+        #prevMonth, #nextMonth {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem;
+            border: none;
+            background: none;
+            color: var(--foreground);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+        }
+
+        #prevMonth:hover:not(:disabled), #nextMonth:hover:not(:disabled) {
+            color: var(--primary);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
     </style>
 </head>
 
@@ -238,9 +261,13 @@
                     </div>
                     <div class="card-content">
                         <div class="flex justify-between items-center mb-4">
-                            <button id="prevMonth" class="btn btn-outline">&lt;</button>
+                            <button id="prevMonth" class="btn btn-outline" aria-label="Mes anterior">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
                             <span id="currentMonthDisplay" class="font-bold">Noviembre 2025</span>
-                            <button id="nextMonth" class="btn btn-outline">&gt;</button>
+                            <button id="nextMonth" class="btn btn-outline" aria-label="Mes siguiente">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
                         </div>
                         <div class="calendar-header">
                             <div>Dom</div>
