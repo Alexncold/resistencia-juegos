@@ -499,6 +499,39 @@ tbody tr:hover {
     font-size: 0.875rem;
 }
 
+/* Tooltip styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: #EDEDF1;
+    color: #1B203D;
+    text-align: center;
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 1000;
+    bottom: -40px; /* Posición debajo del botón */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.2s;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
 /* Modal */
 .modal-overlay {
     position: fixed;
