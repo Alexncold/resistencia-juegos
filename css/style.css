@@ -596,6 +596,10 @@ tbody tr:hover {
 
 /* Paginación */
 .pagination-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -604,14 +608,66 @@ tbody tr:hover {
     padding: 1rem;
     background-color: white;
     border-top: 1px solid var(--border);
-    border-radius: 0 0 var(--radius) var(--radius);
-    width: 100%;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 40;
+}
+
+@media (max-width: 639px) {
+    .pagination-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem 1.25rem;
+        box-sizing: border-box;
+    }
+    
+    .pagination {
+        order: 1;
+        margin-top: 0;
+    }
+    
+    .items-per-page {
+        order: 2;
+        display: flex;
+        justify-content: flex-end;
+        width: auto;
+        padding: 0;
+    }
+    
+    .pagination-btn {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    .pagination-page {
+        min-width: 2rem;
+        height: 2rem;
+        padding: 0 0.5rem;
+        margin: 0 0.25rem;
+    }
 }
 
 @media (min-width: 640px) {
     .pagination-container {
         flex-direction: row;
         justify-content: center;
+        position: static;
+        box-shadow: none;
+        border-radius: 0 0 var(--radius) var(--radius);
+    }
+    
+    .items-per-page {
+        margin-left: auto;
+    }
+}
+
+.main-content {
+    padding-bottom: 100px; /* Aumentado para dar espacio al paginador fijo */
+}
+
+@media (min-width: 640px) {
+    .main-content {
+        padding-bottom: 0;
     }
 }
 
@@ -685,6 +741,13 @@ align-items: center;
 gap: 0.5rem;
 }
 
+/* Hide 'Mostrar:' text on mobile */
+@media (max-width: 639px) {
+    .items-per-page .text-sm {
+        display: none;
+    }
+}
+
 .pagination-select {
     padding: 0.5rem;
     border: 1px solid var(--border);
@@ -717,6 +780,12 @@ html, body {
     padding: 2rem;
     max-width: 100%;
     overflow-x: hidden;
+}
+
+/* Reservations Card Content */
+.reservations-card-content {
+    padding-bottom: 80px; /* Add space for the fixed pagination */
+    position: relative;
 }
 
 /* Mejorar el contenedor de la tabla */
@@ -753,18 +822,6 @@ table {
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
-}
-
-/* Indicador visual de scroll disponible */
-.table-container::after {
-    content: '← Deslizá para ver más →';
-    display: block;
-    text-align: center;
-    padding: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    background-color: var(--muted);
-    border-top: 1px solid var(--border);
 }
 
 /* Media Queries */
