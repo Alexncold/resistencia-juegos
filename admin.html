@@ -16,11 +16,17 @@
             top: 1rem;
             right: 1rem;
             left: auto;
-            z-index: 1000;
+            z-index: 900; /* Reducido de 1000 a 900 para que esté detrás del menú */
             background: none;
             border: none;
             padding: 0.5rem;
             cursor: pointer;
+            transition: z-index 0.3s ease;
+        }
+        
+        /* Ocultar el botón cuando el menú está abierto */
+        .mobile-menu-open .mobile-menu-btn {
+            z-index: 800; /* Asegurarse de que esté detrás del menú */
         }
         
         .mobile-menu-btn .material-symbols-outlined {
@@ -56,22 +62,79 @@
             .sidebar {
                 position: fixed;
                 top: 0;
-                left: -300px;
+                right: -300px;
                 width: 280px;
                 height: 100vh;
                 z-index: 999;
-                transition: left 0.3s ease;
+                transition: right 0.3s ease;
                 overflow-y: auto;
                 padding-top: 5rem;
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+                box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
             }
 
             .mobile-menu-open .sidebar {
-                left: 0;
+                right: 0;
             }
 
             .admin-content {
                 padding: 5rem 1rem 2rem;
+            }
+            
+            /* Ajustes para los campos de fecha en móvil */
+            .card-header .flex.gap-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem 1rem;
+                width: 100%;
+                padding-bottom: 0.5rem;
+            }
+            
+            .card-header .flex.gap-2 .input[type="date"] {
+                width: 100%;
+                min-width: 0;
+            }
+            
+            .card-header .flex.gap-2 label[for^="searchDate"] {
+                white-space: nowrap;
+                grid-row: 1;
+                margin-bottom: 0.25rem;
+            }
+            
+            .card-header .flex.gap-2 input[type="date"] {
+                grid-row: 2;
+            }
+            
+            /* Estilos para el selector de estado */
+            .card-header .flex.gap-2 label[for="searchStatus"],
+            .card-header .flex.gap-2 #searchStatus {
+                grid-column: 1 / -1;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+            
+            .card-header .flex.gap-2 label[for="searchStatus"] {
+                grid-row: 3;
+                margin-bottom: 0;
+            }
+            
+            .card-header .flex.gap-2 #searchStatus {
+                grid-row: 4;
+            }
+            
+            /* Asegurar que el contenedor principal siga siendo responsivo */
+            .card-header > .flex.flex-wrap {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            /* Estilo para el botón limpiar */
+            #clearReservationFiltersBtn {
+                margin-left: 0 !important;
+                margin-top: 0.5rem;
+                justify-content: center;
+                width: 100%;
+                grid-column: 1 / -1;
+                grid-row: 5;
             }
         }
 
