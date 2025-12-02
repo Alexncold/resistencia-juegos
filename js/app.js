@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: Date.now().toString(),
                 userId: user.email,
                 userName: user.name,
-                phoneNumber: state.phoneNumber, // Añadir el número de teléfono
+                phone: state.phoneNumber, // Añadir el número de teléfono
                 date: state.selectedDate.toISOString(),
                 time: state.selectedTime,
                 people: state.people,
