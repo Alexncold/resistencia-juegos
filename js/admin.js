@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchDateEnd = document.getElementById('searchDateEnd');
     const searchStatus = document.getElementById('searchStatus');
     const clearReservationFiltersBtn = document.getElementById('clearReservationFiltersBtn');
+    const deleteSelectedReservationsBtn = document.getElementById('deleteSelectedReservationsBtn');
+    const selectAllReservations = document.getElementById('selectAllReservations');
+    
+    // Objeto para rastrear las reservas seleccionadas
+    const selectedReservations = new Set();
     
     // Variables de paginación
     let currentPage = 1;
@@ -140,6 +145,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // Limpiar la tabla
         reservationsTable.innerHTML = '';
 
+        // Limpiar las selecciones al renderizar
+        if (selectAllReservations) selectAllReservations.checked = false;
+        
+        // Filtrar las selecciones para mantener solo las que existen
+        const existingReservations = new Set(filtered.map(r => r.id));
+        const removedSelections = [];
+        
+        selectedReservations.forEach(id => {
+            if (!existingReservations.has(id)) {
+                removedSelections.push(id);
+            }
+        });
+        
+        removedSelections.forEach(id => selectedReservations.delete(id));
+        updateDeleteButtonState();
+
+        // Renderizar las filas de la tabla
         reservationsTable.innerHTML = filtered.map(r => {
             let statusClass = 'status-pending';
             let statusLabel = 'Pendiente';
@@ -156,9 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const totalAmount = (r.people || 0) * pricePerPerson;
+            const isChecked = selectedReservations.has(r.id);
 
             return `
             <tr>
+                <td style="text-align: center;">
+                    <input type="checkbox" class="reservation-checkbox" data-id="${r.id}" 
+                           ${isChecked ? 'checked' : ''}
+                           style="width: 16px; height: 16px; cursor: pointer;">
+                </td>
                 <td>${new Date(r.date).toLocaleDateString()}</td>
                 <td>${r.time}</td>
                 <td>${r.userName}</td>
@@ -185,6 +213,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Manejar cambios en los checkboxes de reservas individuales
+    document.addEventListener('change', (e) => {
+        if (e.target.classList.contains('reservation-checkbox')) {
+            const reservationId = e.target.dataset.id;
+            if (e.target.checked) {
+                selectedReservations.add(reservationId);
+            } else {
+                selectedReservations.delete(reservationId);
+                if (selectAllReservations) selectAllReservations.checked = false;
+            }
+            updateDeleteButtonState();
+        }
+    });
+
     searchInput.addEventListener('input', renderReservations);
     searchDateStart.addEventListener('change', renderReservations);
     searchDateEnd.addEventListener('change', renderReservations);
@@ -195,6 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchDateStart) searchDateStart.value = '';
             if (searchDateEnd) searchDateEnd.value = '';
             if (searchStatus) searchStatus.value = '';
+            selectedReservations.clear();
+            if (selectAllReservations) selectAllReservations.checked = false;
             renderReservations();
         });
     }
@@ -277,6 +321,46 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al actualizar la reserva');
         }
     };
+
+    // Manejar selección/deselección de todas las reservas
+    if (selectAllReservations) {
+        selectAllReservations.addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.reservation-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+                const reservationId = checkbox.dataset.id;
+                if (e.target.checked) {
+                    selectedReservations.add(reservationId);
+                } else {
+                    selectedReservations.delete(reservationId);
+                }
+            });
+            updateDeleteButtonState();
+        });
+    }
+
+    // Manejar eliminación de reservas seleccionadas
+    if (deleteSelectedReservationsBtn) {
+        deleteSelectedReservationsBtn.addEventListener('click', () => {
+            if (selectedReservations.size === 0) return;
+            
+            if (confirm(`¿Estás seguro de que deseas eliminar las ${selectedReservations.size} reservas seleccionadas?`)) {
+                selectedReservations.forEach(id => {
+                    Storage.deleteReservation(id);
+                });
+                selectedReservations.clear();
+                if (selectAllReservations) selectAllReservations.checked = false;
+                renderReservations();
+            }
+        });
+    }
+
+    // Función para actualizar el estado del botón de eliminar
+    function updateDeleteButtonState() {
+        if (deleteSelectedReservationsBtn) {
+            deleteSelectedReservationsBtn.disabled = selectedReservations.size === 0;
+        }
+    }
 
     // --- Calendar Logic ---
     let adminDate = new Date();
