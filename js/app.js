@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
         gameRadios: document.getElementsByName('gameSelection'),
         gameInputContainer: document.getElementById('gameInputContainer'),
         gameNameInput: document.getElementById('gameNameInput'),
+        
+        // WhatsApp
+        whatsappInput: document.getElementById('whatsappNumber'),
 
         // Summary
         summaryDate: document.getElementById('summaryDate'),
@@ -75,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         people: 1,
         gameType: 'decide_later',
         gameName: '',
+        phoneNumber: '',
         blockedDates: Storage.getBlockedDates(),
         specialDates: Storage.getSpecialDates()
     };
@@ -233,6 +237,29 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSummary();
     });
 
+    // WhatsApp Input
+    if (els.whatsappInput) {
+        els.whatsappInput.addEventListener('input', (e) => {
+            // Eliminar caracteres no numéricos excepto el signo + al principio
+            let value = e.target.value;
+            if (value.startsWith('+')) {
+                // Si empieza con +, lo mantenemos y limpiamos el resto
+                const rest = value.substring(1).replace(/[^0-9]/g, '');
+                value = '+' + rest;
+            } else {
+                // Si no empieza con +, eliminamos todo lo que no sea número
+                value = value.replace(/[^0-9]/g, '');
+            }
+            
+            // Actualizar el valor en el input
+            e.target.value = value;
+            
+            // Actualizar el estado
+            state.phoneNumber = value;
+            updateSummary();
+        });
+    }
+
     // Pay Button - Muestra el modal de confirmación
     els.payBtn.addEventListener('click', () => {
         if (!validate()) {
@@ -333,6 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: Date.now().toString(),
                 userId: user.email,
                 userName: user.name,
+                phoneNumber: state.phoneNumber, // Añadir el número de teléfono
                 date: state.selectedDate.toISOString(),
                 time: state.selectedTime,
                 people: state.people,
@@ -504,6 +532,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (state.gameType === 'specific' && !state.gameName.trim()) {
             isValid = false;
             error = 'Ingresá el nombre del juego';
+        } else if (!state.phoneNumber || !/^\+?[0-9\s-]+$/.test(state.phoneNumber)) {
+            isValid = false;
+            error = 'Ingresá un número de teléfono válido';
         }
 
         if (!silent && !isValid) {

@@ -351,6 +351,7 @@
                                         <th>Fecha</th>
                                         <th>Hora</th>
                                         <th>Cliente</th>
+                                        <th>Teléfono</th>
                                         <th>Juego</th>
                                         <th>Personas</th>
                                         <th>Estado</th>
@@ -363,9 +364,9 @@
                                 </tbody>
                                 <tfoot>
                                     <tr style="background-color: #F6F7F9;">
-                                        <td colspan="6" style="text-align: left; font-weight: 600;">Total recaudado:</td>
-                                        <td id="reservationsTotalAmount" style="font-weight: 700;">$0</td>
-                                        <td></td>
+                                        <td colspan="7" style="text-align: left; font-weight: 600; padding: 12px 16px;">Total recaudado:</td>
+                                        <td id="reservationsTotalAmount" style="font-weight: 700; padding: 12px 16px;">$0</td>
+                                        <td style="padding: 12px 16px;"></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -396,86 +397,179 @@
             <!-- Time Slots Tab -->
             <div id="times" class="tab-content">
                 <h2 class="text-xl font-bold mb-4">Gestión de Horarios</h2>
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="time-slots-container">
                     <!-- Form -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title text-sm">Nuevo Horario</h3>
-                        </div>
-                        <div class="card-content flex flex-col gap-4">
-                            <input type="text" id="timeSlotLabel" class="input" placeholder="Ej: 17:00 - 19:00">
-                            <label class="flex items-center gap-2 text-sm">
-                                <input type="checkbox" id="timeSlotActive" checked>
-                                <span>Activo</span>
-                            </label>
-                            <button id="addTimeSlotBtn" class="btn btn-primary">Agregar horario</button>
+                    <div class="time-slots-form">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title text-sm">Nuevo Horario</h3>
+                            </div>
+                            <div class="card-content flex flex-col gap-4">
+                                <input type="text" id="timeSlotLabel" class="input" placeholder="Ej: 17:00 - 19:00">
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" id="timeSlotActive" checked>
+                                    <span>Activo</span>
+                                </label>
+                                <button id="addTimeSlotBtn" class="btn btn-primary">Agregar horario</button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- List -->
-                    <div id="adminTimeSlotsList" class="flex flex-col gap-4">
+                    <div id="adminTimeSlotsList" class="time-slots-list">
                         <!-- JS Injected -->
                     </div>
                 </div>
+                
+                <style>
+                    .time-slots-container {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 2rem;
+                    }
+                    
+                    .time-slots-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 1rem;
+                    }
+                    
+                    .time-slots-list .card {
+                        margin-bottom: 0;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .time-slots-container {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .time-slots-form {
+                            order: 1;
+                            margin-bottom: 2rem;
+                        }
+                        
+                        .time-slots-list {
+                            order: 2;
+                        }
+                    }
+                </style>
             </div>
 
             <!-- Calendar Tab -->
             <div id="calendar" class="tab-content">
                 <h2 class="text-xl font-bold mb-4">Gestión de Calendario</h2>
-                <div class="flex gap-8 items-start flex-wrap">
+                <div class="calendar-container">
                     <!-- Calendar Grid -->
-                    <div class="card admin-calendar-card" style="flex: 1; min-width: 300px; max-width: 400px;">
-                        <div class="card-header">
-                            <p class="text-sm text-muted">Seleccioná un día para gestionarlo.</p>
-                        </div>
-                        <div class="card-content">
-                            <div class="flex justify-between items-center mb-4">
-                                <button id="adminPrevMonth" class="btn btn-outline">&lt;</button>
-                                <span id="adminMonthDisplay" class="font-bold">Noviembre 2025</span>
-                                <button id="adminNextMonth" class="btn btn-outline">&gt;</button>
+                    <div class="calendar-grid-container">
+                        <div class="card admin-calendar-card">
+                            <div class="card-header">
+                                <p class="text-sm text-muted">Seleccioná un día para gestionarlo.</p>
                             </div>
-                            <div class="calendar-header">
-                                <div>Dom</div>
-                                <div>Lun</div>
-                                <div>Mar</div>
-                                <div>Mié</div>
-                                <div>Jue</div>
-                                <div>Vie</div>
-                                <div>Sáb</div>
-                            </div>
-                            <div id="adminCalendarGrid" class="calendar-grid">
-                                <!-- JS Generated -->
+                            <div class="card-content">
+                                <div class="flex justify-between items-center mb-4">
+                                    <button id="adminPrevMonth" class="btn btn-outline">&lt;</button>
+                                    <span id="adminMonthDisplay" class="font-bold">Noviembre 2025</span>
+                                    <button id="adminNextMonth" class="btn btn-outline">&gt;</button>
+                                </div>
+                                <div class="calendar-header">
+                                    <div>Dom</div>
+                                    <div>Lun</div>
+                                    <div>Mar</div>
+                                    <div>Mié</div>
+                                    <div>Jue</div>
+                                    <div>Vie</div>
+                                    <div>Sáb</div>
+                                </div>
+                                <div id="adminCalendarGrid" class="calendar-grid">
+                                    <!-- JS Generated -->
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Management Panel -->
-                    <div id="dateManagementPanel" class="card"
-                        style="flex: 1; min-width: 300px; max-width: 350px; opacity: 0.5; pointer-events: none;">
-                        <div class="card-header">
-                            <h3 class="font-bold">Gestionar Fecha</h3>
-                        </div>
-                        <div class="card-content flex flex-col gap-4">
-                            <p id="selectedDateDisplay" class="text-sm text-muted mb-2">Seleccioná una fecha...</p>
-
-                            <div class="flex flex-col gap-2">
-                                <label class="text-sm font-bold">Bloquear Fecha</label>
-                                <button id="toggleBlockBtn" class="btn btn-outline w-full">Bloquear /
-                                    Desbloquear</button>
+                    <div class="calendar-management-panel">
+                        <div id="dateManagementPanel" class="card" style="opacity: 0.5; pointer-events: none;">
+                            <div class="card-header">
+                                <h3 class="font-bold">Gestionar Fecha</h3>
                             </div>
+                            <div class="card-content flex flex-col gap-4">
+                                <p id="selectedDateDisplay" class="text-sm text-muted mb-2">Seleccioná una fecha...</p>
 
-                            <div class="flex flex-col gap-2 border-t pt-4 mt-2">
-                                <label class="text-sm font-bold">Fecha Especial</label>
-                                <input type="text" id="specialDateName" class="input"
-                                    placeholder="Nombre (ej. Navidad)">
-                                <div class="flex gap-2">
-                                    <button id="saveSpecialDateBtn" class="btn btn-primary flex-1">Guardar</button>
-                                    <button id="deleteSpecialDateBtn" class="btn btn-destructive flex-1">Borrar</button>
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-sm font-bold">Bloquear Fecha</label>
+                                    <button id="toggleBlockBtn" class="btn btn-outline w-full">Bloquear /
+                                        Desbloquear</button>
+                                </div>
+
+                                <div class="flex flex-col gap-2 border-t pt-4 mt-2">
+                                    <label class="text-sm font-bold">Fecha Especial</label>
+                                    <input type="text" id="specialDateName" class="input"
+                                        placeholder="Nombre (ej. Navidad)">
+                                    <div class="special-date-actions flex gap-2">
+                                        <button id="saveSpecialDateBtn" class="btn btn-primary flex-1">Guardar</button>
+                                        <button id="deleteSpecialDateBtn" class="btn btn-destructive flex-1">Borrar</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <style>
+                    .calendar-container {
+                        display: flex;
+                        gap: 2rem;
+                        flex-wrap: wrap;
+                    }
+                    
+                    .calendar-grid-container {
+                        flex: 0 0 400px; /* Ancho fijo para desktop */
+                        min-width: 300px;
+                        max-width: 100%;
+                    }
+                    
+                    .calendar-management-panel {
+                        flex: 0 0 350px; /* Ancho fijo para desktop */
+                        min-width: 300px;
+                        max-width: 100%;
+                    }
+                    
+                    .special-date-actions {
+                        margin-top: 0.75rem; /* 12px de margen superior */
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .calendar-container {
+                            flex-direction: column;
+                            align-items: stretch;
+                            width: 100%;
+                            max-width: 100%;
+                            padding: 0 1rem;
+                            box-sizing: border-box;
+                        }
+                        
+                        .calendar-grid-container,
+                        .calendar-management-panel {
+                            order: 1;
+                            width: 100% !important;
+                            max-width: 100% !important;
+                            min-width: auto !important;
+                            flex: 0 0 auto !important;
+                        }
+                        
+                        .calendar-management-panel {
+                            order: 2;
+                            margin-top: 1.5rem;
+                        }
+                        
+                        .admin-calendar-card,
+                        #dateManagementPanel {
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+                    }
+                </style>
             </div>
 
             <!-- Price Tab -->
@@ -483,11 +577,19 @@
                 <h2 class="text-xl font-bold mb-4">Precio por Persona</h2>
                 <div class="card" style="max-width: 400px;">
                     <div class="card-header">
-                        <h3 class="card-title text-sm">Modificar precio por persona</h3>
+                        <h3 class="card-title text-sm price-title">Modificar precio por persona</h3>
                     </div>
+                    
+                    <style>
+                        @media (max-width: 768px) {
+                            .price-title {
+                                line-height: 1.75;
+                            }
+                        }
+                    </style>
                     <div class="card-content flex flex-col gap-4">
                         <div>
-                            <label class="text-sm font-bold" for="priceInput">Precio por persona (ARS)</label>
+                            <label class="text-sm font-bold" for="priceInput"></label>
                             <input type="number" id="priceInput" class="input" min="1" step="100" placeholder="5000">
                         </div>
                         <button id="savePriceBtn" class="btn btn-primary">Guardar precio</button>
@@ -498,74 +600,192 @@
             <!-- News Tab -->
             <div id="news" class="tab-content">
                 <h2 class="text-xl font-bold mb-4">Gestión de Novedades</h2>
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
-
+                <div class="news-container">
                     <!-- Form -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title text-sm">Nueva Novedad</h3>
-                        </div>
-                        <div class="card-content flex flex-col gap-4">
-                            <input type="text" id="newsTitle" class="input" placeholder="Título">
-                            <textarea id="newsDesc" class="input" style="height: 100px;"
-                                placeholder="Descripción"></textarea>
-                            <input type="text" id="newsImg" class="input" placeholder="URL de la imagen">
-                            <button id="addNewsBtn" class="btn btn-primary">Publicar</button>
+                    <div class="news-form">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title text-sm">Nueva Novedad</h3>
+                            </div>
+                            <div class="card-content flex flex-col gap-4">
+                                <input type="text" id="newsTitle" class="input" placeholder="Título">
+                                <textarea id="newsDesc" class="input" style="height: 100px;"
+                                    placeholder="Descripción"></textarea>
+                                <input type="text" id="newsImg" class="input" placeholder="URL de la imagen">
+                                <button id="addNewsBtn" class="btn btn-primary">Publicar</button>
+                            </div>
                         </div>
                     </div>
 
                     <!-- List -->
-                    <div id="adminNewsList" class="flex flex-col gap-4">
+                    <div id="adminNewsList" class="news-list">
                         <!-- JS Injected -->
                     </div>
                 </div>
+                
+                <style>
+                    .news-container {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 2rem;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .news-container {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .news-form {
+                            order: 1;
+                            margin-bottom: 2rem;
+                        }
+                        
+                        .news-list {
+                            order: 2;
+                        }
+                    }
+                </style>
             </div>
 
             <!-- Free Play Tables Tab -->
             <div id="free-tables" class="tab-content">
                 <h2 class="text-xl font-bold mb-4">Mesas - Día de club</h2>
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
-
+                <div class="free-tables-container">
                     <!-- Form -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title text-sm">Nueva mesa</h3>
-                        </div>
-                        <div class="card-content flex flex-col gap-4">
-                            <div>
-                                <label class="text-sm font-bold" for="freeTableNumber">Número de mesa</label>
-                                <input type="number" id="freeTableNumber" class="input" min="1" placeholder="Ej: 1">
+                    <div class="free-tables-form">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title text-sm">Nueva mesa</h3>
                             </div>
-                            <div>
-                                <label class="text-sm font-bold" for="freeTableGame">Juego</label>
-                                <input type="text" id="freeTableGame" class="input" placeholder="Ej: Catan">
+                            <div class="card-content flex flex-col gap-4">
+                                <div>
+                                    <label class="text-sm font-bold" for="freeTableNumber">Número de mesa</label>
+                                    <input type="number" id="freeTableNumber" class="input" min="1" placeholder="Ej: 1">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold" for="freeTableGame">Juego</label>
+                                    <input type="text" id="freeTableGame" class="input" placeholder="Ej: Catan">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold" for="freeTableCapacity">Cupos</label>
+                                    <input type="number" id="freeTableCapacity" class="input" min="1" max="10" placeholder="Ej: 4">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold" for="freeTableDate">Fecha (opcional)</label>
+                                    <input type="date" id="freeTableDate" class="input">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold" for="freeTableTimeRange">Rango horario (opcional)</label>
+                                    <input type="text" id="freeTableTimeRange" class="input" placeholder="Ej: 17:00 - 19:00">
+                                </div>
+                                <button id="addFreeTableBtn" class="btn btn-primary">Agregar mesa</button>
                             </div>
-                            <div>
-                                <label class="text-sm font-bold" for="freeTableCapacity">Cupos</label>
-                                <input type="number" id="freeTableCapacity" class="input" min="1" max="10" placeholder="Ej: 4">
-                            </div>
-                            <div>
-                                <label class="text-sm font-bold" for="freeTableDate">Fecha (opcional)</label>
-                                <input type="date" id="freeTableDate" class="input">
-                            </div>
-                            <div>
-                                <label class="text-sm font-bold" for="freeTableTimeRange">Rango horario (opcional)</label>
-                                <input type="text" id="freeTableTimeRange" class="input" placeholder="Ej: 17:00 - 19:00">
-                            </div>
-                            <button id="addFreeTableBtn" class="btn btn-primary">Agregar mesa</button>
                         </div>
                     </div>
 
                     <!-- List -->
-                    <div id="adminFreeTablesList" class="flex flex-col gap-4">
+                    <div id="adminFreeTablesList" class="free-tables-list">
                         <!-- JS Injected -->
                     </div>
                 </div>
+                
+                <style>
+                    .free-tables-container {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 2rem;
+                    }
+                    
+                    .free-tables-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 1rem;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .free-tables-container {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .free-tables-form {
+                            order: 1;
+                            margin-bottom: 2rem;
+                        }
+                        
+                        .free-tables-list {
+                            order: 2;
+                        }
+                    }
+                </style>
             </div>
+            
+            <style>
+                .news-container {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 2rem;
+                }
+                
+                .news-list .card {
+                    margin-bottom: 1rem;
+                }
+                
+                @media (max-width: 768px) {
+                    .news-container {
+                        grid-template-columns: 1fr;
+                    }
+                    
+                    .news-form {
+                        order: 1;
+                        margin-bottom: 2rem;
+                    }
+                    
+                    .news-list {
+                        order: 2;
+                    }
+                    
+                    .news-list .card {
+                        margin-bottom: 1.25rem;
+                    }
+                }
+            </style>
 
         </main>
     </div>
 
+    <!-- Free Play Tables Tab -->
+    <div id="free-tables" class="tab-content">
+        <h2 class="text-xl font-bold mb-4">Mesas - Día de club</h2>
+        <div class="free-tables-container">
+            <!-- Form -->
+            <div class="free-tables-form">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title text-sm">Nueva mesa</h3>
+                    </div>
+                    <div class="card-content flex flex-col gap-4">
+                        <div>
+                            <label class="text-sm font-bold" for="freeTableNumber">Número de mesa</label>
+                            <input type="number" id="freeTableNumber" class="input" min="1" placeholder="Ej: 1">
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold" for="freeTableGame">Juego</label>
+                            <input type="text" id="freeTableGame" class="input" placeholder="Ej: Catan">
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold" for="freeTableCapacity">Cupos</label>
+                            <input type="number" id="freeTableCapacity" class="input" min="1" max="10" placeholder="Ej: 4">
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold" for="freeTableDate">Fecha (opcional)</label>
+                            <input type="date" id="freeTableDate" class="input">
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold" for="freeTableTimeRange">Rango horario (opcional)</label>
+                            <input type="text" id="freeTableTimeRange" class="input" placeholder="Ej: 17:00 - 19:00">
+                        </div>
+                        <button id="addFreeTableBtn" class="btn btn-primary">Agregar mesa</button>
+                    </div>
     <!-- Edit Reservation Modal -->
     <div class="modal-overlay" id="editModal">
         <div class="modal-content">
@@ -587,6 +807,10 @@
                 <div>
                     <label class="text-sm font-bold">Cliente</label>
                     <input type="text" id="editClient" class="input" placeholder="Nombre del cliente">
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Teléfono</label>
+                    <input type="tel" id="editPhone" class="input" placeholder="+54 9 11 1234-5678">
                 </div>
                 <div>
                     <label class="text-sm font-bold">Juego</label>

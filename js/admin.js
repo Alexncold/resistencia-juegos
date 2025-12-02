@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${new Date(r.date).toLocaleDateString()}</td>
                 <td>${r.time}</td>
                 <td>${r.userName}</td>
+                <td>${r.phone || '-'}</td>
                 <td>${r.game}</td>
                 <td>${r.people}</td>
                 <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
@@ -232,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         editTimeSelect.value = reservation.time;
         document.getElementById('editClient').value = reservation.userName;
+        document.getElementById('editPhone').value = reservation.phone || '';
         document.getElementById('editGame').value = reservation.game;
         document.getElementById('editPeople').value = reservation.people;
         document.getElementById('editStatus').value = reservation.status;
@@ -252,6 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             date: document.getElementById('editDate').value,
             time: document.getElementById('editTime').value,
             userName: document.getElementById('editClient').value,
+            phone: document.getElementById('editPhone').value,
             game: document.getElementById('editGame').value,
             people: parseInt(document.getElementById('editPeople').value),
             status: document.getElementById('editStatus').value
