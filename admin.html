@@ -787,86 +787,51 @@
         </main>
     </div>
 
-    <!-- Free Play Tables Tab -->
-    <div id="free-tables" class="tab-content">
-        <h2 class="text-xl font-bold mb-4">Mesas - Día de club</h2>
-        <div class="free-tables-container">
-            <!-- Form -->
-            <div class="free-tables-form">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title text-sm">Nueva mesa</h3>
-                    </div>
-                    <div class="card-content flex flex-col gap-4">
-                        <div>
-                            <label class="text-sm font-bold" for="freeTableNumber">Número de mesa</label>
-                            <input type="number" id="freeTableNumber" class="input" min="1" placeholder="Ej: 1">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold" for="freeTableGame">Juego</label>
-                            <input type="text" id="freeTableGame" class="input" placeholder="Ej: Catan">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold" for="freeTableCapacity">Cupos</label>
-                            <input type="number" id="freeTableCapacity" class="input" min="1" max="10" placeholder="Ej: 4">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold" for="freeTableDate">Fecha (opcional)</label>
-                            <input type="date" id="freeTableDate" class="input">
-                        </div>
-                        <div>
-                            <label class="text-sm font-bold" for="freeTableTimeRange">Rango horario (opcional)</label>
-                            <input type="text" id="freeTableTimeRange" class="input" placeholder="Ej: 17:00 - 19:00">
-                        </div>
-                        <button id="addFreeTableBtn" class="btn btn-primary">Agregar mesa</button>
-                    </div>
     <!-- Edit Reservation Modal -->
     <div class="modal-overlay" id="editModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeEditModal()">&times;</button>
             <h2 class="text-xl font-bold mb-4">Editar Reserva</h2>
-            <div class="flex flex-col gap-4">
-                <div>
-                    <label class="text-sm font-bold">Fecha</label>
-                    <input type="date" id="editDate" class="input">
+            <form onsubmit="event.preventDefault(); saveEditReservation();" class="flex flex-col gap-4">
+                <div class="form-group">
+                    <label for="editDate">Fecha:</label>
+                    <input type="date" id="editDate" class="input" required>
                 </div>
-                <div>
-                    <label class="text-sm font-bold">Hora</label>
-                    <select id="editTime" class="input">
-                        <option value="17:00 - 19:00">17:00 - 19:00</option>
-                        <option value="19:00 - 21:00">19:00 - 21:00</option>
-                        <option value="21:00 - 23:00">21:00 - 23:00</option>
+                <div class="form-group">
+                    <label for="editTime">Hora:</label>
+                    <select id="editTime" class="input" required>
+                        <!-- Se llena dinámicamente -->
                     </select>
                 </div>
-                <div>
-                    <label class="text-sm font-bold">Cliente</label>
-                    <input type="text" id="editClient" class="input" placeholder="Nombre del cliente">
+                <div class="form-group">
+                    <label for="editClient">Cliente:</label>
+                    <input type="text" id="editClient" class="input" required>
                 </div>
-                <div>
-                    <label class="text-sm font-bold">Teléfono</label>
-                    <input type="tel" id="editPhone" class="input" placeholder="+54 9 11 1234-5678">
+                <div class="form-group">
+                    <label for="editPhone">Teléfono:</label>
+                    <input type="tel" id="editPhone" class="input" required>
                 </div>
-                <div>
-                    <label class="text-sm font-bold">Juego</label>
-                    <input type="text" id="editGame" class="input" placeholder="Nombre del juego">
+                <div class="form-group">
+                    <label for="editGame">Juego:</label>
+                    <input type="text" id="editGame" class="input" required>
                 </div>
-                <div>
-                    <label class="text-sm font-bold">Personas</label>
-                    <input type="number" id="editPeople" class="input" min="1" max="6" placeholder="Cantidad">
+                <div class="form-group">
+                    <label for="editPeople">Personas:</label>
+                    <input type="number" id="editPeople" class="input" min="1" required>
                 </div>
-                <div>
-                    <label class="text-sm font-bold">Estado</label>
-                    <select id="editStatus" class="input">
-                        <option value="pending">Pendiente</option>
+                <div class="form-group">
+                    <label for="editStatus">Estado:</label>
+                    <select id="editStatus" class="input" required>
+                        <option value="pending">Pendiente de pago</option>
                         <option value="confirmed">Confirmada</option>
                         <option value="rejected">Rechazada</option>
                     </select>
                 </div>
-                <div class="flex gap-2 mt-4">
-                    <button class="btn btn-primary flex-1" onclick="saveEditReservation()">Guardar Cambios</button>
-                    <button class="btn btn-outline flex-1" onclick="closeEditModal()">Cancelar</button>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -874,7 +839,7 @@
     <div class="modal-overlay" id="editFreeTableModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeEditFreeTableModal()">&times;</button>
-            <h2 class="text-xl font-bold mb-4">Editar mesa "Día de Club"</h2>
+            <h2 class="text-xl font-bold mb-4">Editar mesa "Día de club"</h2>
             <div class="flex flex-col gap-4">
                 <div>
                     <label class="text-sm font-bold" for="editFreeTableNumber">Número de mesa</label>
@@ -960,6 +925,56 @@
         });
     </script>
 
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+    </style>
 </body>
 
 </html>
