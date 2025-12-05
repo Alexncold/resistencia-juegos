@@ -115,10 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Calcular el total de páginas
-        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
         
         // Asegurarse de que la página actual sea válida
-        if (currentPage > totalPages && totalPages > 0) {
+        if (currentPage > totalPages) {
             currentPage = totalPages;
         } else if (currentPage < 1) {
             currentPage = 1;
@@ -134,8 +134,18 @@ document.addEventListener('DOMContentLoaded', () => {
             currentPageDisplay.style.fontWeight = '600';
         }
         
-        // Los botones de navegación siempre están habilitados
-        // No se deshabilitan al llegar a los límites
+        // Actualizar estado de los botones de navegación
+        if (prevPageBtn) {
+            prevPageBtn.disabled = currentPage <= 1;
+            prevPageBtn.style.opacity = currentPage <= 1 ? '0.5' : '1';
+            prevPageBtn.style.cursor = currentPage <= 1 ? 'not-allowed' : 'pointer';
+        }
+        
+        if (nextPageBtn) {
+            nextPageBtn.disabled = currentPage >= totalPages;
+            nextPageBtn.style.opacity = currentPage >= totalPages ? '0.5' : '1';
+            nextPageBtn.style.cursor = currentPage >= totalPages ? 'not-allowed' : 'pointer';
+        }
         
         // Obtener las reservaciones para la página actual
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -162,7 +172,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDeleteButtonState();
 
         // Renderizar las filas de la tabla
-        reservationsTable.innerHTML = filtered.map(r => {
+        if (paginatedReservations.length === 0) {
+            reservationsTable.innerHTML = `
+                <tr>
+                    <td colspan="10" style="text-align: center; padding: 2rem; color: #666;">
+                        ${filtered.length === 0 ? 'No hay reservas que coincidan con los filtros' : 'No hay reservas en esta página'}
+                    </td>
+                </tr>
+            `;
+        } else {
+            reservationsTable.innerHTML = paginatedReservations.map(r => {
             let statusClass = 'status-pending';
             let statusLabel = 'Pendiente';
 
@@ -202,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </tr>
             `;
         }).join('');
+        }
 
         if (reservationsTotalAmountEl) {
             const totalRevenue = filtered.reduce((sum, r) => {
