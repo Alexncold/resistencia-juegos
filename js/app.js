@@ -429,11 +429,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 availabilityEl.className = `availability ${availability.available ? 'available' : 'unavailable'}`;
                 availabilityEl.textContent = availability.available 
                     ? `${availability.spotsLeft} mesa${availability.spotsLeft !== 1 ? 's' : ''} disponible${availability.spotsLeft !== 1 ? 's' : ''}`
-                    : 'Completo';
+                    : 'Cupos llenos';
                 div.appendChild(availabilityEl);
                 
                 if (!availability.available) {
                     div.classList.add('unavailable');
+                    div.style.cursor = 'not-allowed';
+                    div.style.pointerEvents = 'none';
                 }
             }
             
@@ -508,6 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     updateSummary();
+                    renderTimeSlots();
                 });
             }
 

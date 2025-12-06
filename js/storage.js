@@ -343,10 +343,14 @@ const Storage = {
     // Table Availability
     getSlotOccupancy(dateString, timeSlot) {
         const reservations = this.getReservations();
-        return reservations.filter(res => 
-            res.date === dateString && 
-            res.time === timeSlot
-        ).length;
+        // Normalize the input date to date-only format (YYYY-MM-DD) for comparison
+        const normalizedDate = dateString.split('T')[0];
+        
+        return reservations.filter(res => {
+            // Handle both full ISO dates and date-only strings
+            const resDate = typeof res.date === 'string' ? res.date.split('T')[0] : '';
+            return resDate === normalizedDate && res.time === timeSlot;
+        }).length;
     },
 
     checkSlotAvailability(dateString, timeSlot) {
